@@ -1,0 +1,48 @@
+.task-container {
+  margin: 20px;
+}
+
+.algorithm-container {
+  text-align: center;
+  margin: 20px;
+}
+
+h1, h2 {
+  text-align: center;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+li {
+  margin-bottom: 10px;
+}
+
+button {
+  margin-top: 10px;
+}
+
+#output {
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid #ccc;
+}
+
+.task-progress {
+  padding: 5px;
+  margin-bottom: 5px;
+}
+
+.task-progress.completed {
+  background-color: #66BB6A;
+}
+
+.task-progress.current {
+  background-color: #FFCA28;
+}
+
+.task-progress.io {
+  background-color: #42A5F5;
+}

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testing Seminar</title>
+    <script src = "Seminar.js"></script>
+</head>
+<body style="text-align: center;">
+    <label>Multilevel Queue Scheduling</label>
+    <br><br>
+    <label>Process Input</label>
+    <br><br>
+    <input type = "text" id = "arrivalTimeInput" placeholder = "Enter arrival time">
+    <input type = "text" id = "burstTimeInput" placeholder = "Enter bust time">
+    <select id = "selectID">
+        <option value = "Foreground">RR - Iterative Process/Foreground</option>
+        <option value = "Background">FCFS - Batch Process/Background</option>
+    </select>
+    <br><br>
+    <button type = "submit" onclick = "addProcess()" id = "add">Add Process</button>
+    <output id = "processList">
+    <br><br>
+</body>
+</html>

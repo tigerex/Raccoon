@@ -66,6 +66,13 @@ function getRandomColor() {
   return color;
 }
 
+function clearData(){
+  var inp = document.getElementById("processList");
+  inp.innerHTML = "";
+  processes = [];
+  process = 1;
+}
+
 // function startScheduling() {
 //   var algorithmSelect = document.getElementById('algorithmSelect');
 //   var selectedAlgorithm = algorithmSelect.value;

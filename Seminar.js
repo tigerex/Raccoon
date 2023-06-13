@@ -53,9 +53,6 @@ function addProcess() {
       typeSche: typeSche, 
       color: getRandomColor()
     });
-    processes.sort(function(a, b){
-        return a.process - b.process;
-    });
   }
   process += 1;
 }

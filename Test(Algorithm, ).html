@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FCFS Scheduling</title>
+    <style>
+        table {
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>FCFS Scheduling</h1>
+    <button onclick="runFCFS()">Run FCFS</button>
+    <br><br>
+    <table id="resultTable">
+        <thead>
+            <tr>
+                <th>Process ID</th>
+                <th>Arrival Time</th>
+                <th>Burst Time</th>
+                <th>Completion Time</th>
+                <th>Turnaround Time</th>
+                <th>Waiting Time</th>
+            </tr>
+        </thead>
+        <tbody id="resultBody">
+        </tbody>
+    </table>
+
+    <script src="script.js"></script>
+</body>
+</html>

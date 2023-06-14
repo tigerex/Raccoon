@@ -110,14 +110,14 @@ function multilevelQueue() {
         k = -1;
         min = 9999;
         for (var i = 0; i < p.length; i++) {
-            if (p[i].at <= t && p[i].valid == 0 && p[i].queue=="foreground" && p[i].bt < min) {
+            if (p[i].at = t && p[i].valid == 0 && p[i].queue=="foreground" && p[i].bt < min) {
                 k = i;
                 min = p[i].bt;
             }
         }
 		if(k==-1){
 			for(var i=0;i<p.length;i++){
-				if(p[i].at<=t && p[i].valid==0 && p[i].queue=="background"){
+				if(p[i].at=t && p[i].valid==0 && p[i].queue=="background"){
 					k = i;
 					break;
 				}

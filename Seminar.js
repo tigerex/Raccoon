@@ -73,6 +73,9 @@ function clearData(){
   process = 1;
 }
 
+function multilevelQueue(){
+    var line = document.createElement("")
+}
 // function startScheduling() {
 //   var algorithmSelect = document.getElementById('algorithmSelect');
 //   var selectedAlgorithm = algorithmSelect.value;

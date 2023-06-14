@@ -4,17 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Testing Seminar</title>
-    <script src = "Seminar.js"></script>
+    <script src = "index.js"></script>
 </head>
 <body style="text-align: center;">
     <!--INPUT & SHOWCASE SECTION-->
     <div>
-        <label>Multilevel Queue Scheduling</label>
-        <br><br>
-        <label>Process Input</label>
-        <br><br>
+        <p>Multilevel Queue Scheduling</p>
+        <p>Process Input</p>
         <input type = "text" id = "arrivalTimeInput" placeholder = "Enter arrival time">
-        <input type = "text" id = "burstTimeInput" placeholder = "Enter bust time">
+        <input type = "text" id = "burstTimeInput" placeholder = "Enter burst time">
         <select id = "selectID">
             <option value = "Foreground">RR - Iterative Process/Foreground</option>
             <option value = "Background">FCFS - Batch Process/Background</option>
@@ -22,9 +20,10 @@
         <br><br>
         <button type = "submit" onclick = "addProcess()" id = "add">Add Process</button>
         <button type = "submit" onclick = "clearData()" id = "clear">Clear Data</button>
-        <button type = "sumbit" onclick = "" id = "scheduling">AOF</button>
-        <br><br>
-        <output id = "processList">
+        <button type = "sumbit" onclick = "multilevelQueue()" id = "scheduling">Scheduling</button>
+        <br>
+        <p>---------------------------------------------------------------------------------------------------------------------------------------------------------</p>
+        <output id = "processList">    
     </div>
 </body>
 </html>

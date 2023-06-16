@@ -1,5 +1,8 @@
 var processes = [];
 var process = 1;
+var currentTime = 0;
+var averageWaitingTime = 0.0;
+var averageTurnaroundTime = 0.0;
 
 function addProcess() {
   var burstTimeInput = document.getElementById('burstTimeInput');
@@ -40,7 +43,7 @@ function addProcess() {
     
     //Show Input
     var li = document.createElement('li');
-    li.appendChild(document.createTextNode('P' + process + ':\t(AT: ' + arrivalTime + ',BT: ' + burstTime + ')\t-\t' + typeSche));
+    li.appendChild(document.createTextNode('P' + process + ':\t(AT: ' + arrivalTime + ', BT: ' + burstTime + ')\t-\t' + typeSche));
     processList.appendChild(li);
     burstTimeInput.value = '';
     arrivalTimeInput.value = '';
@@ -48,8 +51,13 @@ function addProcess() {
     //Saved Input
     processes.push({ 
       process: process, 
-      burstTime: burstTime, 
+      burstTime: burstTime,
+      remainingTime: burstTime, 
       arrivalTime: arrivalTime, 
+      waitingTime: 0,
+      turnaroundTime: 0,
+      completeTime: 0,
+      finish: 0,
       typeSche: typeSche, 
       color: getRandomColor()
     });
@@ -74,185 +82,151 @@ function clearData(){
 }
 
 function multilevelQueue(){
-    var line = document.createElement("")
+  var operation = document.getElementById('operations');
+  operation.innerHTML = "";
+  var br = document.createElement("br");
+
+  //Sort Processes by Arrive Time
+  processes.sort(function (a, b){
+    return a.arrivalTime - b.arrivalTime;
+  });
+
+  currentTime = 0;
+  var quantum = 2;
+  var n = processes.length;
+  var done = 0;
+  var count = 0;
+  var k = -1;
+  var ready = [];
+
+  //Push all Process with Arrive Time = 0 to Ready
+  var i = 0;
+  while(processes[i].arrivalTime == 0){
+    ready.push(i);
+    i++;
+  }
+
+  //Execute Processes
+  while(done != 1){
+    k = ready.shift();
+    
+    //Found That None Process have Arrive Time = 0
+    if(k == undefined){
+      var currentTimeTemp = currentTime;
+      for(i = 0; i < n; i++){
+        if(processes[i].finish == 0){
+          break;
+        }
+      }
+      currentTime = processes[i].arrivalTime;
+      
+      //Show There is no Process have Arrive Time = 0
+      var newdiv = document.createElement("div");
+      newdiv.setAttribute("style", "text-align: center; margin: auto; width:100%; font-size: 20px;");
+      newdiv.textContent = "Current Time = " + currentTimeTemp + ": CPU is idle.";
+      operation.appendChild(br);
+      operation.appendChild(newdiv);
+      operation.appendChild(br);
+
+      //Push the Process Which Have Arrive Time = Current Time to Ready Queue
+      for(i = 0; i < n; i++){
+        if(processes[i].arrivalTime == t){
+          ready.push(i);
+        }
+      }
+    }
+    //There is Process have Arrive Time = 0
+    else{
+
+      //Show Which Process Being Executed
+      var newdiv = document.createElement("div");
+      newdiv.setAttribute("style", "text-align: center; margin: auto; width:100%; font-size: 20px;");
+      newdiv.textContent = "Current Time = " + currentTime + ": Process-" + processes[k].process + " entered CPU and being executed";
+      operation.appendChild(br);
+      operation.appendChild(newdiv);
+      operation.appendChild(br);
+
+      //Foreground RR
+      if(processes[k].typeSche == "Foreground"){
+
+        //Process Have Remaining Time Equal or Less Than Quantum
+        if(processes[k].remainingTime <= quantum){
+          processes[k].finish = 1;
+          count += 1;
+          processes[k].completeTime = currentTime + processes[k].remainingTime;
+          processes[k].turnaroundTime = processes[k].completeTime - processes[k].arrivalTime;
+          processes[k].waitingTime = processes[k].turnaroundTime - processes[k].burstTime;
+          processes[k].remainingTime = 0;
+          currentTime = processes[k].completeTime;
+        }
+
+        //Process Have Remaining Time More Than Quantum
+        else{
+          processes[k].remainingTime -= quantum;
+          currentTime += quantum;
+        }
+
+        //Push Process Have Arrive Time Between Quantum Processing
+        for(i = 0; i < n; i++){
+          if(processes[i].arrivalTime > currentTime - quantum && processes[i].arrivalTime <= currentTime){
+            ready.push(i);
+          }
+        }
+
+        //Process Still Have Remaining Time Being Push to Back
+        if(processes[k].remainingTime > 0){
+          ready.push(k);
+        }
+      }
+
+      //Background FCFS
+      else{
+        processes[k].remainingTime -= 1;
+
+        //FCFS Didn't Interupted By RR
+        if(processes[k].remainingTime == 0){
+          processes[k].finish = 1;
+          processes[k].completeTime = currentTime + 1;
+          processes[k].turnaroundTime = processes[k].completeTime - processes[k].arrivalTime;
+          processes[k].waitingTime = processes[k].turnaroundTime - processes[k].burstTime;
+          count += 1;
+        }
+        //FCFS Been Interupted By RR
+        else{
+          ready.push(k);
+        }
+        currentTime += 1;
+      }
+    }
+
+    //Stop Execute
+    if(count == n){
+      done = 1;
+    }
+  }
+
+  //Calculate Average Waiting Time & Average Turnaround Time
+  var total_turnaroundTime = 0.0, total_waitingTime = 0.0;
+  for(i = 0; i < n; i++){
+    total_turnaroundTime += processes[i].turnaroundTime;
+    total_waitingTime += processes[i].waitingTime;
+  }
+  averageTurnaroundTime = (total_turnaroundTime / n).toFixed(2);
+  averageWaitingTime = (total_waitingTime / n).toFixed(2);
+  console.log(averageTurnaroundTime);
+  console.log(averageWaitingTime);
 }
-// function startScheduling() {
-//   var algorithmSelect = document.getElementById('algorithmSelect');
-//   var selectedAlgorithm = algorithmSelect.value;
-//   var output = document.getElementById('output');
-//   output.innerHTML = '';
 
-//   if (selectedAlgorithm === 'fcfs') {
-//     fcfsScheduling(output);
-//   } else if (selectedAlgorithm === 'sjf') {
-//     sjfScheduling(output);
-//   } else if (selectedAlgorithm === 'srtf') {
-//     srtfScheduling(output);
-//   } else if (selectedAlgorithm === 'roundRobin') {
-//     var quantum = 2;
-//     roundRobinScheduling(output, quantum);
-//   } else if (selectedAlgorithm === 'io') {
-//     var ioTime = 3;
-//     ioScheduling(output, ioTime);
-//   }
-// }
+function showOutput(){
+  if(processes.length <= 0){
+    alert("No Process to Schedule!");
+    return;
+  }
 
-// function fcfsScheduling(output) {
-//   tasks.sort(function(a, b) {
-//     return a.arrivalTime - b.arrivalTime;
-//   });
+  for(let i = 0; i < processes.length; i++){
+    processes[i].remainingTime = processes[i].burstTime;
+    processes[i].finish = 0;
+  }
 
-//   var currentTime = tasks[0].arrivalTime;
-//   var totalTime = 0;
-
-//   for (var i = 0; i < tasks.length; i++) {
-//     var task = tasks[i];
-//     var waitingTime = currentTime - task.arrivalTime;
-//     output.innerHTML += '<p>Executing task: ' + task.task + ' (' + task.burstTime + ', ' + task.arrivalTime + ')</p>';
-//     output.innerHTML += '<p>Waiting time: ' + waitingTime + '</p>';
-//     currentTime += task.burstTime;
-//     totalTime += task.burstTime;
-//   }
-
-//   output.innerHTML += '<p>Total execution time: ' + totalTime + '</p>';
-// }
-
-// function sjfScheduling(output) {
-//   tasks.sort(function(a, b) {
-//     return a.burstTime - b.burstTime || a.arrivalTime - b.arrivalTime;
-//   });
-
-//   var currentTime = tasks[0].arrivalTime;
-//   var totalTime = 0;
-
-//   for (var i = 0; i < tasks.length; i++) {
-//     var task = tasks[i];
-//     var waitingTime = currentTime - task.arrivalTime;
-//     output.innerHTML += '<p>Executing task: ' + task.task + ' (' + task.burstTime + ', ' + task.arrivalTime + ')</p>';
-//     output.innerHTML += '<p>Waiting time: ' + waitingTime + '</p>';
-//     currentTime += task.burstTime;
-//     totalTime += task.burstTime;
-//   }
-
-//   output.innerHTML += '<p>Total execution time: ' + totalTime + '</p>';
-// }
-
-// function srtfScheduling(output) {
-//   tasks.sort(function(a, b) {
-//     return a.arrivalTime - b.arrivalTime;
-//   });
-
-//   var remainingTimes = tasks.map(function(task) {
-//     return task.burstTime;
-//   });
-
-//   var completed = 0;
-//   var currentTime = tasks[0].arrivalTime;
-//   var totalTime = 0;
-
-//   while (completed !== tasks.length) {
-//     var minTime = Infinity;
-//     var minIndex = -1;
-
-//     for (var i = 0; i < tasks.length; i++) {
-//       if (tasks[i].arrivalTime <= currentTime && remainingTimes[i] > 0 && remainingTimes[i] < minTime) {
-//         minTime = remainingTimes[i];
-//         minIndex = i;
-//       }
-//     }
-
-//     if (minIndex === -1) {
-//       currentTime++;
-//       continue;
-//     }
-
-//     var task = tasks[minIndex];
-//     output.innerHTML += '<p>Executing task: ' + task.task + ' (' + minTime + ', ' + task.arrivalTime + ')</p>';
-//     remainingTimes[minIndex]--;
-//     currentTime++;
-//     totalTime++;
-
-//     if (remainingTimes[minIndex] === 0) {
-//       completed++;
-//       output.innerHTML += '<p>Task ' + task.task + ' completed</p>';
-//     }
-//   }
-
-//   output.innerHTML += '<p>Total execution time: ' + totalTime + '</p>';
-// }
-
-// function roundRobinScheduling(output, quantum) {
-//   var remainingTimes = tasks.map(function(task) {
-//     return task.burstTime;
-//   });
-
-//   var completed = 0;
-//   var currentTime = tasks[0].arrivalTime;
-//   var totalTime = 0;
-
-//   while (completed !== tasks.length) {
-//     for (var i = 0; i < tasks.length; i++) {
-//       var task = tasks[i];
-//       if (task.arrivalTime <= currentTime && remainingTimes[i] > 0) {
-//         var time = Math.min(quantum, remainingTimes[i]);
-//         output.innerHTML += '<p>Executing task: ' + task.task + ' (' + time + ', ' + task.arrivalTime + ')</p>';
-//         remainingTimes[i] -= time;
-//         currentTime += time;
-//         totalTime += time;
-
-//         if (remainingTimes[i] === 0) {
-//           completed++;
-//           output.innerHTML += '<p>Task ' + task.task + ' completed</p>';
-//         } else if (remainingTimes[i] > 0 && remainingTimes[i] % quantum === 0) {
-//           output.innerHTML += '<p>Task ' + task.task + ' paused for I/O</p>';
-//           output.innerHTML += '<p>Waiting for ' + task.task + ' to complete I/O...</p>';
-//           task.burstTime += 3;
-//           currentTime += 3;
-//           output.innerHTML += '<p>Resuming task ' + task.task + ' after I/O</p>';
-//         }
-//       }
-//     }
-//   }
-
-//   output.innerHTML += '<p>Total execution time: ' + totalTime + '</p>';
-// }
-
-// function ioScheduling(output, ioTime) {
-//   tasks.sort(function(a, b) {
-//     return a.arrivalTime - b.arrivalTime;
-//   });
-
-//   var remainingTimes = tasks.map(function(task) {
-//     return task.burstTime;
-//   });
-
-//   var completed = 0;
-//   var currentTime = tasks[0].arrivalTime;
-//   var totalTime = 0;
-
-//   while (completed !== tasks.length) {
-//     for (var i = 0; i < tasks.length; i++) {
-//       var task = tasks[i];
-//       if (task.arrivalTime <= currentTime && remainingTimes[i] > 0) {
-//         var time = Math.min(ioTime, remainingTimes[i]);
-//         output.innerHTML += '<p class="task-progress io">Executing I/O for task: ' + task.task + ' (' + time + ', ' + task.arrivalTime + ')</p>';
-//         remainingTimes[i] -= time;
-//         currentTime += time;
-//         totalTime += time;
-
-//         if (remainingTimes[i] === 0) {
-//           completed++;
-//           output.innerHTML += '<p>Task ' + task.task + ' completed</p>';
-//         } else if (remainingTimes[i] > 0) {
-//           output.innerHTML += '<p>Task ' + task.task + ' paused for I/O</p>';
-//           output.innerHTML += '<p>Waiting for ' + task.task + ' to complete I/O...</p>';
-//           task.burstTime += ioTime;
-//           currentTime += ioTime;
-//           output.innerHTML += '<p>Resuming task ' + task.task + ' after I/O</p>';
-//         }
-//       }
-//     }
-//   }
-
-//   output.innerHTML += '<p>Total execution time: ' + totalTime + '</p>';
-// }
+  multilevelQueue()
+}

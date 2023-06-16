@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Testing Seminar</title>
-    <script src = "index.js"></script>
+    <script src = "Seminar.js"></script>
 </head>
 <body style="text-align: center;">
     <!--INPUT & SHOWCASE SECTION-->
     <div>
-        <p>Multilevel Queue Scheduling</p>
-        <p>Process Input</p>
+        <h1>Multilevel Queue Scheduling</h1>
+        <h2>Process Input</h2>
         <input type = "text" id = "arrivalTimeInput" placeholder = "Enter arrival time">
         <input type = "text" id = "burstTimeInput" placeholder = "Enter burst time">
         <select id = "selectID">
@@ -20,10 +20,13 @@
         <br><br>
         <button type = "submit" onclick = "addProcess()" id = "add">Add Process</button>
         <button type = "submit" onclick = "clearData()" id = "clear">Clear Data</button>
-        <button type = "sumbit" onclick = "multilevelQueue()" id = "scheduling">Scheduling</button>
-        <br>
+        <button type = "sumbit" onclick = "showOutput()" id = "scheduling">Scheduling</button>
         <p>---------------------------------------------------------------------------------------------------------------------------------------------------------</p>
-        <output id = "processList">    
+        <h2>List of Processes</h2>
+        <div id = "processList"></div>    
+        <p>---------------------------------------------------------------------------------------------------------------------------------------------------------</p>
+        <h2>CPU Operations</h2>
+        <div id = "operations"></div>
     </div>
 </body>
 </html>

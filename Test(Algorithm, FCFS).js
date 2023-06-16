@@ -14,7 +14,7 @@ function runFCFS() {
 
     var currentTime = 0; // Thời gian hiện tại
 
-    process.sort(function(a, b){
+    processes.sort(function(a, b){
                  return a.arrivalTime - b.arrivalTime;
      });
     

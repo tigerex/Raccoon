@@ -26,8 +26,10 @@ function runRoundRobin() {
 
     // Chạy vòng lặp cho đến khi tất cả các quy trình hoàn thành
     while (!allProcessesCompleted) {
+        var temp;
         allProcessesCompleted = true;
         for (var i = 0; i < n; i++) {
+               
             if (remainingTime[i] > 0) {
                 allProcessesCompleted = false;
 
@@ -39,6 +41,11 @@ function runRoundRobin() {
                 } else {
                     currentTime += quantum;
                     remainingTime[i] -= quantum;
+                }
+                if(processes[i+1].arrivalTime == currentTime){
+                temp = remainingTime[i];
+                remainingTime[i] = remainingTime[i+1];
+                remainingTime[i+1] = temp;
                 }
             }
         }

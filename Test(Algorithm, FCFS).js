@@ -14,6 +14,10 @@ function runFCFS() {
 
     var currentTime = 0; // Thời gian hiện tại
 
+    process.sort(function(a, b){
+                 return a.arrivalTime - b.arrivalTime;
+     });
+    
     // Tính toán thời gian hoàn thành và thời gian chờ cho từng quy trình
     for (var i = 0; i < n; i++) {
         if (currentTime < processes[i].arrivalTime) {

@@ -3,7 +3,7 @@ function runFCFS() {
     var processes = [
         { id: 1, arrivalTime: 0, burstTime: 6 },
         { id: 2, arrivalTime: 1, burstTime: 4 },
-        { id: 3, arrivalTime: 2, burstTime: 8 },
+        { id: 3, arrivalTime: 4, burstTime: 8 },
         { id: 4, arrivalTime: 3, burstTime: 5 },
     ];
 

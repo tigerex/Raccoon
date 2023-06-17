@@ -57,8 +57,9 @@ function addProcess() {
       waitingTime: 0,
       turnaroundTime: 0,
       completeTime: 0,
+      available: 0,
       finish: 0,
-      typeSche: typeSche, 
+      typeSche: typeSche,
       color: getRandomColor()
     });
   }
@@ -81,6 +82,7 @@ function clearData(){
   process = 1;
   var cleanOperation = document.getElementById('operations');
   cleanOperation.innerHTML = "";
+  console.clear();
 }
 
 function multilevelQueue(){
@@ -110,11 +112,14 @@ function multilevelQueue(){
 
   //Execute Processes
   while(done != 1){
+    console.log(currentTime);
+    console.log(ready);
     k = ready.shift();
-    
+    var currentTimeTemp;
+
     //Found That None Process have Arrive Time = 0
     if(k == undefined){
-      var currentTimeTemp = currentTime;
+      currentTimeTemp = currentTime;
       for(i = 0; i < n; i++){
         if(processes[i].finish == 0){
           break;
@@ -132,21 +137,40 @@ function multilevelQueue(){
 
       //Push the Process Which Have Arrive Time = Current Time to Ready Queue
       for(i = 0; i < n; i++){
-        if(processes[i].arrivalTime == t){
+        if(processes[i].arrivalTime == currentTime){
           ready.push(i);
         }
       }
     }
+
     //There is Process have Arrive Time = 0
     else{
 
       //Show Which Process Being Executed
-      var newdiv = document.createElement("div");
-      newdiv.setAttribute("style", "text-align: center; margin: auto; width:100%; font-size: 20px;");
-      newdiv.textContent = "Current Time = " + currentTime + ": Process-" + processes[k].process + " entered CPU and being executed";
-      operation.appendChild(br);
-      operation.appendChild(newdiv);
-      operation.appendChild(br);
+      var flag = 0;
+      for(i = 0; i < n; i++){
+        if(processes[i].typeSche == "Foreground" && processes[i].finish == 0){
+          flag = 1;
+          break;
+        }
+      }
+
+      if(flag == 0){
+        var newdiv = document.createElement("div");
+        newdiv.setAttribute("style", "text-align: center; margin: auto; width:100%; font-size: 20px;");
+        newdiv.textContent = "Current Time = " + currentTime + ": Process-" + processes[k].process + " entered CPU and being executed";
+        operation.appendChild(br);
+        operation.appendChild(newdiv);
+        operation.appendChild(br);
+      }
+      else if(flag == 1 && processes[k].typeSche == "Foreground"){
+        var newdiv = document.createElement("div");
+        newdiv.setAttribute("style", "text-align: center; margin: auto; width:100%; font-size: 20px;");
+        newdiv.textContent = "Current Time = " + currentTime + ": Process-" + processes[k].process + " entered CPU and being executed";
+        operation.appendChild(br);
+        operation.appendChild(newdiv);
+        operation.appendChild(br);
+      }
 
       //Foreground RR
       if(processes[k].typeSche == "Foreground"){
@@ -164,6 +188,7 @@ function multilevelQueue(){
 
         //Process Have Remaining Time More Than Quantum
         else{
+          processes[k].available = 1;
           processes[k].remainingTime -= quantum;
           currentTime += quantum;
         }
@@ -171,6 +196,7 @@ function multilevelQueue(){
         //Push Process Have Arrive Time Between Quantum Processing
         for(i = 0; i < n; i++){
           if(processes[i].arrivalTime > currentTime - quantum && processes[i].arrivalTime <= currentTime){
+            processes[i].available = 1;
             ready.push(i);
           }
         }
@@ -183,21 +209,68 @@ function multilevelQueue(){
 
       //Background FCFS
       else{
-        processes[k].remainingTime -= 1;
 
-        //FCFS Didn't Interupted By RR
-        if(processes[k].remainingTime == 0){
+        //Check If There Are Still Foreground Process Haven't Done Yet
+        var flag = 0;
+        for(i = 0; i < n; i++){
+          if(processes[i].typeSche == "Foreground" && processes[i].finish == 0){
+            flag = 1;
+            break;
+          }
+        }
+
+        //There Are Still Foreground Processes Left
+        if(flag == 1 && processes[k].available == 0){
+          processes[k].remainingTime -= 1;
+          processes[k].available = 1;
+        
+          //FCFS Finish Scheduling
+          if(processes[k].remainingTime == 0){
+            processes[k].finish = 1;
+            processes[k].completeTime = currentTime + 1;
+            processes[k].turnaroundTime = processes[k].completeTime - processes[k].arrivalTime;
+            processes[k].waitingTime = processes[k].turnaroundTime - processes[k].burstTime;
+            count += 1;
+          }
+          currentTime += 1;
+
+          //Push Process Have Been Arrived But not Done Scheduling
+          for(i = 0; i < n; i++){
+            if(processes[i].arrivalTime <= currentTime && processes[i].finish == 0 && processes[i].available == 0){
+              ready.push(i);
+            }
+          }    
+
+          //FCFS Been Interupted By RR
+          if(processes[k].remainingTime > 0){
+            ready.push(k);
+          }
+        }
+
+        //Push Background Process to the Back of Ready Queue / Skip this Process
+        else if(flag == 1 && processes[k].available == 1){
+          ready.push(k);
+        }
+
+        //There is None Foreground Process Left
+        else{
+          currentTime += processes[k].burstTime;
+          processes[k].available = 1;
+          processes[k].remainingTime = 0;
           processes[k].finish = 1;
-          processes[k].completeTime = currentTime + 1;
+          processes[k].completeTime = currentTime;
           processes[k].turnaroundTime = processes[k].completeTime - processes[k].arrivalTime;
           processes[k].waitingTime = processes[k].turnaroundTime - processes[k].burstTime;
           count += 1;
+
+          //Push Process Have Been Arrived
+          for(i = 0; i < n; i++){
+            if(processes[i].arrivalTime <= currentTime && processes[i].finish == 0 && processes[i].available == 0){
+              processes[i].available = 1;
+              ready.push(i);
+            }
+          }              
         }
-        //FCFS Been Interupted By RR
-        else{
-          ready.push(k);
-        }
-        currentTime += 1;
       }
     }
 

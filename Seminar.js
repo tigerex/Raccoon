@@ -75,10 +75,12 @@ function getRandomColor() {
 }
 
 function clearData(){
-  var inp = document.getElementById("processList");
-  inp.innerHTML = "";
+  var cleanList = document.getElementById("processList");
+  cleanList.innerHTML = "";
   processes = [];
   process = 1;
+  var cleanOperation = document.getElementById('operations');
+  cleanOperation.innerHTML = "";
 }
 
 function multilevelQueue(){

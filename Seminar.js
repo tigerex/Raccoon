@@ -101,13 +101,16 @@ function multilevelQueue(){
   var done = 0;
   var count = 0;
   var k = -1;
-  var ready = [];
+  const ready = [];
 
   //Push all Process with Arrive Time = 0 to Ready
   var i = 0;
-  while(processes[i].arrivalTime == 0){
-    ready.push(i);
-    i++;
+  for(i = 0; i < n; i++){
+    if(processes[i].arrivalTime == 0){
+      ready.push(i);
+      console.log(ready);
+      processes[i].available = 1;
+    }
   }
 
   //Execute Processes
@@ -147,30 +150,12 @@ function multilevelQueue(){
     else{
 
       //Show Which Process Being Executed
-      var flag = 0;
-      for(i = 0; i < n; i++){
-        if(processes[i].typeSche == "Foreground" && processes[i].finish == 0){
-          flag = 1;
-          break;
-        }
-      }
-
-      if(flag == 0){
-        var newdiv = document.createElement("div");
-        newdiv.setAttribute("style", "text-align: center; margin: auto; width:100%; font-size: 20px;");
-        newdiv.textContent = "Current Time = " + currentTime + ": Process-" + processes[k].process + " entered CPU and being executed";
-        operation.appendChild(br);
-        operation.appendChild(newdiv);
-        operation.appendChild(br);
-      }
-      else if(flag == 1 && processes[k].typeSche == "Foreground"){
-        var newdiv = document.createElement("div");
-        newdiv.setAttribute("style", "text-align: center; margin: auto; width:100%; font-size: 20px;");
-        newdiv.textContent = "Current Time = " + currentTime + ": Process-" + processes[k].process + " entered CPU and being executed";
-        operation.appendChild(br);
-        operation.appendChild(newdiv);
-        operation.appendChild(br);
-      }
+      var newdiv = document.createElement("div");
+      newdiv.setAttribute("style", "text-align: center; margin: auto; width:100%; font-size: 20px;");
+      newdiv.textContent = "Current Time = " + currentTime + ": Process-" + processes[k].process + " entered CPU and being executed";
+      operation.appendChild(br);
+      operation.appendChild(newdiv);
+      operation.appendChild(br);
 
       //Foreground RR
       if(processes[k].typeSche == "Foreground"){
@@ -212,9 +197,16 @@ function multilevelQueue(){
 
         //Check If There Are Still Foreground Process Haven't Done Yet
         var flag = 0;
+        var flagII = 0;
         for(i = 0; i < n; i++){
           if(processes[i].typeSche == "Foreground" && processes[i].finish == 0){
             flag = 1;
+
+            //Check If There Are Foreground Process Have Arrive Time More than Current Time
+            if(processes[i].arrivalTime > currentTime){
+              flagII = 1;
+              break;
+            }
             break;
           }
         }
@@ -247,14 +239,56 @@ function multilevelQueue(){
           }
         }
 
+        //Execute Background Process Until Foreground Process Arrive Time
+        else if(flag == 1 && processes[k].available == 1 && flagII == 1){
+          processes[k].available = 1;
+
+          //Find Foreground Process Have Arrive Time More than Current Time
+          for(i = 0; i < n; i++){
+            if(processes[i].typeSche == "Foreground" && processes[i].arrivalTime > currentTime && processes[i].available == 0){
+              var math = processes[i].arrivalTime - currentTime;
+              currentTime += math;
+              processes[k].remainingTime -= math;
+              break;
+            }
+          }
+
+          //FCFS Finish Scheduling
+          if(processes[k].remainingTime == 0){
+            processes[k].finish = 1;
+            processes[k].completeTime = currentTime;
+            processes[k].turnaroundTime = processes[k].completeTime - processes[k].arrivalTime;
+            processes[k].waitingTime = processes[k].turnaroundTime - processes[k].burstTime;
+            count += 1;
+          }
+
+          //Push Process Have Been Arrived But not Done Scheduling
+          for(i = 0; i < n; i++){
+            if(processes[i].arrivalTime <= currentTime && processes[i].finish == 0 && processes[i].available == 0){
+              ready.push(i);
+            }
+          } 
+
+          //Background Process Still Remaining
+          if(processes[k].remainingTime > 0){
+            ready.push(k);
+          }
+        }
+
         //Push Background Process to the Back of Ready Queue / Skip this Process
         else if(flag == 1 && processes[k].available == 1){
+          var newdiv = document.createElement("div");
+          newdiv.setAttribute("style", "text-align: center; margin: auto; width:100%; font-size: 20px;");
+          newdiv.textContent = "<< This Process-" + processes[k].process + " is in Background Queue so It Been Push Back to Last Queue >>";
+          operation.appendChild(br);
+          operation.appendChild(newdiv);
+          operation.appendChild(br);
           ready.push(k);
         }
 
         //There is None Foreground Process Left
         else{
-          currentTime += processes[k].burstTime;
+          currentTime += processes[k].remainingTime;
           processes[k].available = 1;
           processes[k].remainingTime = 0;
           processes[k].finish = 1;

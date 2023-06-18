@@ -1,4 +1,5 @@
 var processes = [];
+var gantt = [];
 var process = 1;
 var currentTime = 0;
 var averageWaitingTime = 0.0;
@@ -102,6 +103,8 @@ function multilevelQueue(){
     return a.arrivalTime - b.arrivalTime;
   });
 
+  gantt = [];
+  var tgantt = [];
   currentTime = 0;
   var quantum = 2;
   var n = processes.length;
@@ -121,8 +124,7 @@ function multilevelQueue(){
 
   //Execute Processes
   while(done != 1){
-    console.log(currentTime);
-    console.log(ready);
+    console.log(currentTime + " :CPU is ready for next task");
     k = ready.shift();
     var currentTimeTemp;
 
@@ -163,7 +165,7 @@ function multilevelQueue(){
       //Show Which Process Being Executed
       var newdiv = document.createElement("div");
       newdiv.setAttribute("style", "text-align: center; margin: auto; width:100%; font-size: 20px;");
-      newdiv.textContent = "Current Time = " + currentTime + ": Process-" + processes[k].process + " entered CPU and being executed";
+      newdiv.textContent = "Current Time = " + currentTime + " : Process-" + processes[k].process + " entered CPU and is being executed";
       operation.appendChild(br);
       operation.appendChild(newdiv);
       operation.appendChild(br);
@@ -232,7 +234,7 @@ function multilevelQueue(){
         if(flag == 1 && currentTime == 0){
           var newdiv = document.createElement("div");
           newdiv.setAttribute("style", "text-align: center; margin: auto; width:100%; font-size: 20px;");
-          newdiv.textContent = "<< This Process-" + processes[k].process + " is in Background Queue so It Been Push Back to Last Queue >>";
+          newdiv.textContent = "<< This Process-" + processes[k].process + " is in Background Queue so It had Been Push Back to Last Queue >>";
           operation.appendChild(br);
           operation.appendChild(newdiv);
           operation.appendChild(br);
@@ -407,24 +409,68 @@ function multilevelQueue(){
   averageWaitingTime = (total_waitingTime / n).toFixed(2);
   averageResponeTime = (total_responeTime / n).toFixed(2);
 
-  console.log("Respone Time");
-  for(i = 0; i < n; i++){
-    console.log(processes[i].responeTime);
-  }
+  var output = document.getElementById('output');
+  output.innerHTML = "";
+  
+  //output averageResponeTime
+  console.log("Respond time: "+averageResponeTime);
+  var avrtimediv = document.createElement("div");
+  avrtimediv.setAttribute("style", "text-align: center; margin: auto; width:100%; font-size: 20px;");
+  avrtimediv.textContent=("Respone Time: " +averageResponeTime);
+  output.appendChild(br);
+  output.appendChild(avrtimediv);
+  output.appendChild(br);
+  ready.push(i);
 
-  console.log("Waiting Time");
-  for(i = 0; i < n; i++){
-    console.log(processes[i].waitingTime);
-  }
+  //output averageWaitingTime
+  console.log("Waiting time: "+averageWaitingTime);
+  var wtimediv = document.createElement("div");
+  wtimediv.setAttribute("style", "text-align: center; margin: auto; width:100%; font-size: 20px;");
+  wtimediv.textContent=("Waiting time: " + averageWaitingTime);
+  output.appendChild(br);
+  output.appendChild(wtimediv);
+  output.appendChild(br);
+  ready.push(i);
 
-  console.log("Turnaround Time");
-  for(i = 0; i < n; i++){
-    console.log(processes[i].turnaroundTime);
-  }
+  //ouput averageTurnaroundTime
+  console.log("Turnaround time: "+averageTurnaroundTime);
+  var avttimediv = document.createElement("div");
+  avttimediv.setAttribute("style", "text-align: center; margin: auto; width:100%; font-size: 20px;");
+  avttimediv.textContent=("Turnaround Time: " +averageTurnaroundTime);
+  output.appendChild(br);
+  output.appendChild(avttimediv);
+  output.appendChild(br);
+  ready.push(i);
 
-  console.log(averageResponeTime);
-  console.log(averageWaitingTime);
-  console.log(averageTurnaroundTime);
+  //dữ liệu để test code taoj gantt chart
+  var cpuQueue = [
+    { start: processes[1].arrivalTime, end: processes[1].completeTime, color: '#FF5722' },
+    { start: processes[2].arrivalTime, end: processes[2].completeTime, color: '#9C27B0' },
+    { start: processes[3].arrivalTime, end: processes[3].completeTime, color: '#3F51B5' },
+    { start: processes[4].arrivalTime, end: processes[4].completeTime, color: '#4CAF50' },
+    { start: processes[5].arrivalTime, end: processes[5].completeTime, color: '#F44336' }
+  ];
+
+  //code tạo gantt chart
+  var chart = document.getElementById('chart');
+  chart.innerHTML = '';
+
+  for (var i = 0; i < cpuQueue.length; i++) {
+    var task = cpuQueue[i];
+    var taskBar = document.createElement('div');
+    taskBar.className = 'task-bar';
+    taskBar.style.width = (task.end - task.start) * 30 + 'px';
+    taskBar.style.backgroundColor = task.color;
+
+    var taskLabel = document.createElement('span');
+    taskLabel.textContent = 'P ' + (i + 1);
+
+    taskBar.appendChild(taskLabel);
+    chart.appendChild(br);
+    chart.appendChild(taskBar);
+    chart.appendChild(br);
+    ready.push(i);
+  }
 }
 
 function showOutput(){

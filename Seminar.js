@@ -409,6 +409,7 @@ function multilevelQueue(){
   averageWaitingTime = (total_waitingTime / n).toFixed(2);
   averageResponeTime = (total_responeTime / n).toFixed(2);
 
+  //output start here
   var output = document.getElementById('output');
   output.innerHTML = "";
   

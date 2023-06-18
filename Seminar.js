@@ -3,6 +3,7 @@ var process = 1;
 var currentTime = 0;
 var averageWaitingTime = 0.0;
 var averageTurnaroundTime = 0.0;
+var averageResponeTime = 0.0;
 
 function addProcess() {
   var burstTimeInput = document.getElementById('burstTimeInput');
@@ -54,6 +55,8 @@ function addProcess() {
       burstTime: burstTime,
       remainingTime: burstTime, 
       arrivalTime: arrivalTime, 
+      responeTime: 0,
+      firstTimeExecute: 0,
       waitingTime: 0,
       turnaroundTime: 0,
       completeTime: 0,
@@ -80,6 +83,10 @@ function clearData(){
   cleanList.innerHTML = "";
   processes = [];
   process = 1;
+  currentTime = 0;
+  averageWaitingTime = 0.0;
+  averageTurnaroundTime = 0.0;
+  averageResponeTime = 0.0;
   var cleanOperation = document.getElementById('operations');
   cleanOperation.innerHTML = "";
   console.clear();
@@ -108,7 +115,6 @@ function multilevelQueue(){
   for(i = 0; i < n; i++){
     if(processes[i].arrivalTime == 0){
       ready.push(i);
-      console.log(ready);
       processes[i].available = 1;
     }
   }
@@ -160,6 +166,12 @@ function multilevelQueue(){
       //Foreground RR
       if(processes[k].typeSche == "Foreground"){
 
+        //Process First Time Being Execute
+        processes[k].firstTimeExecute += 1;
+        if(processes[k].firstTimeExecute == 1){
+          processes[k].responeTime = currentTime - processes[k].arrivalTime;
+        }
+       
         //Process Have Remaining Time Equal or Less Than Quantum
         if(processes[k].remainingTime <= quantum){
           processes[k].finish = 1;
@@ -216,6 +228,12 @@ function multilevelQueue(){
           processes[k].remainingTime -= 1;
           processes[k].available = 1;
         
+          //Process First Time Being Execute
+          processes[k].firstTimeExecute += 1;
+          if(processes[k].firstTimeExecute == 1){
+            processes[k].responeTime = currentTime - processes[k].arrivalTime;
+          }
+
           //FCFS Finish Scheduling
           if(processes[k].remainingTime == 0){
             processes[k].finish = 1;
@@ -242,6 +260,12 @@ function multilevelQueue(){
         //Execute Background Process Until Foreground Process Arrive Time
         else if(flag == 1 && processes[k].available == 1 && flagII == 1){
           processes[k].available = 1;
+          
+          //Process First Time Being Execute
+          processes[k].firstTimeExecute += 1;
+          if(processes[k].firstTimeExecute == 1){
+            processes[k].responeTime = currentTime - processes[k].arrivalTime;
+          }          
 
           //Find Foreground Process Have Arrive Time More than Current Time
           for(i = 0; i < n; i++){
@@ -288,6 +312,13 @@ function multilevelQueue(){
 
         //There is None Foreground Process Left
         else{
+
+          //Process First Time Being Execute
+          processes[k].firstTimeExecute += 1;
+          if(processes[k].firstTimeExecute == 1){
+            processes[k].responeTime = currentTime - processes[k].arrivalTime;
+          }
+
           currentTime += processes[k].remainingTime;
           processes[k].available = 1;
           processes[k].remainingTime = 0;
@@ -303,7 +334,7 @@ function multilevelQueue(){
               processes[i].available = 1;
               ready.push(i);
             }
-          }              
+          }
         }
       }
     }
@@ -315,15 +346,31 @@ function multilevelQueue(){
   }
 
   //Calculate Average Waiting Time & Average Turnaround Time
-  var total_turnaroundTime = 0.0, total_waitingTime = 0.0;
+  var total_turnaroundTime = 0.0, total_waitingTime = 0.0, total_responeTime = 0.0;
   for(i = 0; i < n; i++){
+    total_responeTime += processes[i].responeTime;
     total_turnaroundTime += processes[i].turnaroundTime;
     total_waitingTime += processes[i].waitingTime;
   }
   averageTurnaroundTime = (total_turnaroundTime / n).toFixed(2);
   averageWaitingTime = (total_waitingTime / n).toFixed(2);
-  console.log(averageTurnaroundTime);
+  averageResponeTime = (total_responeTime / n).toFixed(2);
+
+  for(i = 0; i < n; i++){
+    console.log(processes[i].responeTime);
+  }
+
+  for(i = 0; i < n; i++){
+    console.log(processes[i].waitingTime);
+  }
+
+  for(i = 0; i < n; i++){
+    console.log(processes[i].turnaroundTime);
+  }
+
+  console.log(averageResponeTime);
   console.log(averageWaitingTime);
+  console.log(averageTurnaroundTime);
 }
 
 function showOutput(){
@@ -335,6 +382,7 @@ function showOutput(){
   for(let i = 0; i < processes.length; i++){
     processes[i].remainingTime = processes[i].burstTime;
     processes[i].finish = 0;
+    processes[i].available = 0;
   }
 
   multilevelQueue()

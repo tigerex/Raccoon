@@ -155,6 +155,11 @@ function multilevelQueue(){
     //There is Process have Arrive Time = 0
     else{
 
+      // //Show Operation CPU is Idle
+      // for(i = 0; i < n; i++){
+
+      // }
+
       //Show Which Process Being Executed
       var newdiv = document.createElement("div");
       newdiv.setAttribute("style", "text-align: center; margin: auto; width:100%; font-size: 20px;");
@@ -215,7 +220,7 @@ function multilevelQueue(){
             flag = 1;
 
             //Check If There Are Foreground Process Have Arrive Time More than Current Time
-            if(processes[i].arrivalTime > currentTime){
+            if(processes[i].arrivalTime >= currentTime){
               flagII = 1;
               break;
             }
@@ -267,23 +272,58 @@ function multilevelQueue(){
             processes[k].responeTime = currentTime - processes[k].arrivalTime;
           }          
 
+          var math = 0;
+          var flagIII = 0;
           //Find Foreground Process Have Arrive Time More than Current Time
           for(i = 0; i < n; i++){
             if(processes[i].typeSche == "Foreground" && processes[i].arrivalTime > currentTime && processes[i].available == 0){
-              var math = processes[i].arrivalTime - currentTime;
-              currentTime += math;
-              processes[k].remainingTime -= math;
-              break;
-            }
-          }
+              
+              //Operation See Other Background Before Foreground Arrive Time
+              for(var j = 0; j < n; j++){
+                if(processes[j].typeSche == "Background" && processes[j].finish == 0 && processes[j].firstTimeExecute == 1){                
+                  currentTimeTemp = currentTime;
+                  currentTime += processes[k].remainingTime;
 
-          //FCFS Finish Scheduling
-          if(processes[k].remainingTime == 0){
-            processes[k].finish = 1;
-            processes[k].completeTime = currentTime;
-            processes[k].turnaroundTime = processes[k].completeTime - processes[k].arrivalTime;
-            processes[k].waitingTime = processes[k].turnaroundTime - processes[k].burstTime;
-            count += 1;
+                  //Check If Foreground Arrive or Not
+                  if(processes[i].arrivalTime <= currentTime){
+                    currentTime = currentTimeTemp;
+                    flagIII = 0;
+                    break;
+                  }
+
+                  processes[k].available = 1;
+                  processes[k].remainingTime = 0;
+                  processes[k].finish = 1;
+                  processes[k].completeTime = currentTime;
+                  processes[k].turnaroundTime = processes[k].completeTime - processes[k].arrivalTime;
+                  processes[k].waitingTime = processes[k].turnaroundTime - processes[k].burstTime;
+                  count += 1;
+                  flagIII = 1;
+                  break;
+                }
+              }
+              
+              //Background Doing His Job then Don't Need This Yet
+              if(flagIII == 0){
+                math = processes[i].arrivalTime - currentTime;
+                currentTime = processes[i].arrivalTime;
+                processes[k].remainingTime -= math;
+
+                //FCFS Finish Scheduling
+                if(processes[k].remainingTime <= 0){
+                  processes[k].finish = 1;
+                  processes[k].remainingTime = 0;
+                  processes[k].completeTime = currentTime;
+                  processes[k].turnaroundTime = processes[k].completeTime - processes[k].arrivalTime;
+                  processes[k].waitingTime = processes[k].turnaroundTime - processes[k].burstTime;
+                  count += 1;
+                }
+                break;
+              }
+              else{
+                break;
+              }
+            }
           }
 
           //Push Process Have Been Arrived But not Done Scheduling

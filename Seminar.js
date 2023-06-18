@@ -228,8 +228,19 @@ function multilevelQueue(){
           }
         }
 
+        //Current Time = 0 Have Both Foreground && Background but Background First so Background Prioties Foreground
+        if(flag == 1 && currentTime == 0){
+          var newdiv = document.createElement("div");
+          newdiv.setAttribute("style", "text-align: center; margin: auto; width:100%; font-size: 20px;");
+          newdiv.textContent = "<< This Process-" + processes[k].process + " is in Background Queue so It Been Push Back to Last Queue >>";
+          operation.appendChild(br);
+          operation.appendChild(newdiv);
+          operation.appendChild(br);
+          ready.push(k);
+        }
+
         //There Are Still Foreground Processes Left
-        if(flag == 1 && processes[k].available == 0){
+        else if(flag == 1 && processes[k].available == 0){
           processes[k].remainingTime -= 1;
           processes[k].available = 1;
         
@@ -396,14 +407,17 @@ function multilevelQueue(){
   averageWaitingTime = (total_waitingTime / n).toFixed(2);
   averageResponeTime = (total_responeTime / n).toFixed(2);
 
+  console.log("Respone Time");
   for(i = 0; i < n; i++){
     console.log(processes[i].responeTime);
   }
 
+  console.log("Waiting Time");
   for(i = 0; i < n; i++){
     console.log(processes[i].waitingTime);
   }
 
+  console.log("Turnaround Time");
   for(i = 0; i < n; i++){
     console.log(processes[i].turnaroundTime);
   }

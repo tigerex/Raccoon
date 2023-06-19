@@ -5,7 +5,7 @@ var averageWaitingTime = 0.0;
 var averageTurnaroundTime = 0.0;
 var averageResponeTime = 0.0;
 var gantt = [];
-var colors = ["#e040fb", "#ff80ab", "#3f51b5", "#1e88e5", "#009688", "#4caf50", "#cddc39", "#ffeb3b", "#607d8b", "#ff9800"];
+var colors = ["#FF0000", "#05FF00", "#F2FF00", "#00C9FF", "#FF00F5", "#FF9100", "#004FFF", "#8000FF", "#00FFA3", "#B4CF49"];
 
 function addProcess() {
   var burstTimeInput = document.getElementById('burstTimeInput');

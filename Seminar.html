@@ -5,7 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Testing Seminar</title>
     <script src = "Seminar.js"></script>
+    <link rel = "stylesheet" type = "text/css" href = "Seminar.css">
 </head>
+<style>
+    th, tbody, td {
+      border-bottom: 2px solid;
+      border-left: 2px solid;
+    }
+    table, th, tbody, td {
+      border-collapse: collapse;
+      padding: 10px;
+    }
+</style>
 <body style="text-align: center;">
     <!--INPUT & SHOWCASE SECTION-->
     <div>
@@ -28,6 +39,24 @@
         <div id = "processList"></div>    
     </div>
 
+    <!--GANTT CHART-->
+    <div>
+        <p>---------------------------------------------------------------------------------------------------------------------------------------------------------</p>
+        <h2>Gantt Chart</h2>
+        <div id = "gantt"></div>
+        <div id = "timer"></div>
+        <br><br><br>
+    </div>
+
+    <!-- OUTPUT AVERAGE TIME -->
+    <div>
+        <p>---------------------------------------------------------------------------------------------------------------------------------------------------------</p>
+        <h2>Average Time</h2>
+        <div style = "margin-top: auto; margin-left: auto; margin-right: auto; text-align:center; font-size: 20px;" id="art1"></div>
+        <div style = "margin-top: auto; margin-left: auto; margin-right: auto; text-align:center; font-size: 20px;" id="awt1"></div>
+        <div style = "margin-top: auto; margin-left: auto; margin-right: auto; text-align:center; font-size: 20px;" id="atat1"></div>
+    </div>
+
     <!--CPU OPERATIONS-->
     <div>
         <p>---------------------------------------------------------------------------------------------------------------------------------------------------------</p>
@@ -39,12 +68,14 @@
     <div>
         <p>---------------------------------------------------------------------------------------------------------------------------------------------------------</p>
         <h2>Output Table</h2>
+        <div>
+            <table style = "margin-top: auto; margin-left: auto; margin-right: auto; border: 2px solid black; text-align: center;">
+                <thead id = "tableHead"></thead>
+                <tbody id = "processTable"></tbody>
+            </table>
+        </div>
     </div>
+    
 
-    <!--GANTT CHART-->
-    <div>
-        <p>---------------------------------------------------------------------------------------------------------------------------------------------------------</p>
-        <h2>Gantt Chart</h2>
-    </div>
 </body>
 </html>

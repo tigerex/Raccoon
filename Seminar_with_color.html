@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testing Seminar</title>
+    <script src = "Seminar.js"></script>
+    <link rel = "stylesheet" type = "text/css" href = "Seminar.css">
+</head>
+<style>
+    th, tbody, td {
+      border-bottom: 2px solid;
+      border-left: 2px solid;
+    }
+    table, th, tbody, td {
+      border-collapse: collapse;
+      padding: 10px;
+    }
+</style>
+<body style="text-align: center;">
+    <!--INPUT & SHOWCASE SECTION-->
+    <div>
+        <h1>Multilevel Queue Scheduling</h1>
+        <p>Here Foreground Queue Has More Priority than Background Queue</p>
+        <p>Foreground Queue Uses RR Scheduling Algorithm with Quantum = 2 Whereas Background Queue Uses FCFS</p>
+        <h2>Process Input</h2>
+        <input type = "number" id = "quantum" placeholder = "Enter Quantum">
+        <button type = "submit" onclick = "setQuantum()" id = "set">Set Quantum</button>
+        <br><br>
+        <input type = "number" id = "arrivalTimeInput" placeholder = "Enter arrival time">
+        <input type = "number" id = "burstTimeInput" placeholder = "Enter burst time">
+        <select id = "selectID">
+            <option value = "Foreground">RR - Iterative Process/Foreground</option>
+            <option value = "Background">FCFS - Batch Process/Background</option>
+        </select>
+        <br><br>
+        <button type = "submit" onclick = "addProcess()" id = "add">Add Process</button>
+        <button type = "submit" onclick = "clearData()" id = "clear">Clear Data</button>
+        <button type = "sumbit" onclick = "showOutput()" id = "scheduling">Scheduling</button>
+        <p>---------------------------------------------------------------------------------------------------------------------------------------------------------</p>
+        <h2>List of Processes</h2>
+        <div id = "quantumNumber"></div> 
+        <div id = "processList"></div>    
+    </div>
+
+    <!--GANTT CHART-->
+    <div>
+        <p>---------------------------------------------------------------------------------------------------------------------------------------------------------</p>
+        <h2>Gantt Chart</h2>
+        <div id = "gantt"></div>
+        <div id = "timer"></div>
+        <br><br><br>
+    </div>
+    <!--CPU OPERATIONS-->
+    <div>
+        <p>---------------------------------------------------------------------------------------------------------------------------------------------------------</p>
+        <h2>Operations Taken Place In CPU</h2>
+            <div style="margin-top: 35px; margin-left: auto; margin-right: auto; padding-left: 400px; padding-right: 400px;" id = "operations"></div> 
+    </div>
+
+    <!--OUTPUT TABLE-->
+    <div>
+        <p>---------------------------------------------------------------------------------------------------------------------------------------------------------</p>
+        <h2>Output Table</h2>
+        <div>
+            <table style = "margin-top: auto; margin-left: auto; margin-right: auto; border: 2px solid rgb(253, 252, 252); text-align: center;">
+                <thead id = "tableHead"></thead>
+                <tbody id = "processTable"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- OUTPUT AVERAGE TIME -->
+    <div>
+        <p>---------------------------------------------------------------------------------------------------------------------------------------------------------</p>
+        <h2>Average Time</h2>
+        <div style = "color:rgb(255, 255, 255) ;margin-top: auto; margin-left: auto; margin-right: auto; text-align:center; font-size: 20px; font-weight: bold;" id="art1"></div>
+        <div style = "color:rgb(255, 255, 255) ;margin-top: auto; margin-left: auto; margin-right: auto; text-align:center; font-size: 20px; font-weight: bold;" id="awt1"></div>
+        <div style = "color:rgb(255, 255, 255) ;margin-top: auto; margin-left: auto; margin-right: auto; text-align:center; font-size: 20px; font-weight: bold;" id="atat1"></div>
+    </div>
+
+</body>
+</html>

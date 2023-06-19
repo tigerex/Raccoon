@@ -1,1 +1,11 @@
+#timer{
+    width: 805px;
+    position:relative;
+    margin: auto;
+}
 
+#gantt{
+    width: 805px;
+    position:relative;
+    margin: auto;
+}

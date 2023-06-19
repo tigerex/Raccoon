@@ -1,10 +1,11 @@
 var processes = [];
-var gantt = [];
 var process = 1;
 var currentTime = 0;
 var averageWaitingTime = 0.0;
 var averageTurnaroundTime = 0.0;
 var averageResponeTime = 0.0;
+var gantt = [];
+var colors = ["#e040fb", "#ff80ab", "#3f51b5", "#1e88e5", "#009688", "#4caf50", "#cddc39", "#ffeb3b", "#607d8b", "#ff9800"];
 
 function addProcess() {
   var burstTimeInput = document.getElementById('burstTimeInput');
@@ -45,7 +46,8 @@ function addProcess() {
     
     //Show Input
     var li = document.createElement('li');
-    li.appendChild(document.createTextNode('P' + process + ':\t(AT: ' + arrivalTime + ', BT: ' + burstTime + ')\t-\t' + typeSche));
+    li.setAttribute("style", "text-align: center; margin: auto; width:100%; font-size: 20px;");
+    li.textContent = 'Process-' + process + ' (Arrival Time: ' + arrivalTime + ', Burst Time: ' + burstTime + ') Queue: ' + typeSche;
     processList.appendChild(li);
     burstTimeInput.value = '';
     arrivalTimeInput.value = '';
@@ -82,14 +84,30 @@ function getRandomColor() {
 function clearData(){
   var cleanList = document.getElementById("processList");
   cleanList.innerHTML = "";
+  var cleanOperation = document.getElementById('operations');
+  cleanOperation.innerHTML = "";
+  var table = document.getElementById("processTable");
+  table.innerHTML = "";
+  var thead = document.getElementById("tableHead");
+  thead.innerHTML = "";
+  var gt = document.getElementById("gantt");
+  gt.innerHTML = "";
+  var timer1 = document.getElementById("timer");
+  timer1.innerHTML = "";
+  var art2 = document.getElementById("art1");
+  art2.innerHTML = "";
+  var awt2 = document.getElementById("awt1");
+  awt2.innerHTML = "";
+  var atat2 = document.getElementById("atat1");
+  atat2.innerHTML = "";
+
   processes = [];
   process = 1;
   currentTime = 0;
   averageWaitingTime = 0.0;
   averageTurnaroundTime = 0.0;
   averageResponeTime = 0.0;
-  var cleanOperation = document.getElementById('operations');
-  cleanOperation.innerHTML = "";
+  gantt = [];
   console.clear();
 }
 
@@ -104,8 +122,8 @@ function multilevelQueue(){
   });
 
   gantt = [];
-  var tgantt = [];
   currentTime = 0;
+  var tgantt = [];
   var quantum = 2;
   var n = processes.length;
   var done = 0;
@@ -124,11 +142,10 @@ function multilevelQueue(){
 
   //Execute Processes
   while(done != 1){
-//     console.log(currentTime + " :CPU is ready for next task");
     console.log(currentTime);
     console.log(ready);
     k = ready.shift();
-    var currentTimeTemp;
+    var currentTimeTemp = 0;
 
     //Found That None Process have Arrive Time = 0
     if(k == undefined){
@@ -138,12 +155,20 @@ function multilevelQueue(){
           break;
         }
       }
+
+      //Gantt Chart Doing His Job
+      tgantt.push({
+        "process": -1,
+        "start": currentTime,
+        "end": processes[i].arrivalTime
+      });
+
       currentTime = processes[i].arrivalTime;
       
       //Show There is no Process have Arrive Time = 0
       var newdiv = document.createElement("div");
       newdiv.setAttribute("style", "text-align: center; margin: auto; width:100%; font-size: 20px;");
-      newdiv.textContent = "Current Time = " + currentTimeTemp + ": CPU is idle.";
+      newdiv.textContent = "Current Time = " + currentTimeTemp + ": CPU is Idle.";
       operation.appendChild(br);
       operation.appendChild(newdiv);
       operation.appendChild(br);
@@ -162,7 +187,7 @@ function multilevelQueue(){
       //Show Which Process Being Executed
       var newdiv = document.createElement("div");
       newdiv.setAttribute("style", "text-align: center; margin: auto; width:100%; font-size: 20px;");
-      newdiv.textContent = "Current Time = " + currentTime + " : Process-" + processes[k].process + " entered CPU and is being executed";
+      newdiv.textContent = "Current Time = " + currentTime + ": Process-" + processes[k].process + " Entered CPU and is Being Executed";
       operation.appendChild(br);
       operation.appendChild(newdiv);
       operation.appendChild(br);
@@ -179,11 +204,20 @@ function multilevelQueue(){
         //Process Have Remaining Time Equal or Less Than Quantum
         if(processes[k].remainingTime <= quantum){
           processes[k].finish = 1;
+          processes[k].available = 1;
           count += 1;
           processes[k].completeTime = currentTime + processes[k].remainingTime;
           processes[k].turnaroundTime = processes[k].completeTime - processes[k].arrivalTime;
           processes[k].waitingTime = processes[k].turnaroundTime - processes[k].burstTime;
           processes[k].remainingTime = 0;
+
+          //Gantt Chart Doing His Job
+          tgantt.push({
+            "process": processes[k].process,
+            "start": currentTime,
+            "end": processes[k].completeTime
+          });
+
           currentTime = processes[k].completeTime;
         }
 
@@ -191,6 +225,14 @@ function multilevelQueue(){
         else{
           processes[k].available = 1;
           processes[k].remainingTime -= quantum;
+
+          //Gantt Chart Doing His Job
+          tgantt.push({
+            "process": processes[k].process,
+            "start": currentTime,
+            "end": currentTime + quantum
+          });
+
           currentTime += quantum;
         }
 
@@ -231,7 +273,7 @@ function multilevelQueue(){
         if(flag == 1 && currentTime == 0){
           var newdiv = document.createElement("div");
           newdiv.setAttribute("style", "text-align: center; margin: auto; width:100%; font-size: 20px;");
-          newdiv.textContent = "<< This Process-" + processes[k].process + " is in Background Queue so It had Been Push Back to Last Queue >>";
+          newdiv.textContent = "<< This Process-" + processes[k].process + " is in Background Queue so It Been Push Back to Last Queue >>";
           operation.appendChild(br);
           operation.appendChild(newdiv);
           operation.appendChild(br);
@@ -256,6 +298,21 @@ function multilevelQueue(){
             processes[k].turnaroundTime = processes[k].completeTime - processes[k].arrivalTime;
             processes[k].waitingTime = processes[k].turnaroundTime - processes[k].burstTime;
             count += 1;
+
+            //Gantt Chart Doing His Job
+            tgantt.push({
+              "process": processes[k].process,
+              "start": currentTime,
+              "end": processes[k].completeTime
+            });
+          }else{
+            
+            //Gantt Chart Doing His Job
+            tgantt.push({
+              "process": processes[k].process,
+              "start": currentTime,
+              "end": currentTime + 1
+            });
           }
           currentTime += 1;
 
@@ -309,14 +366,21 @@ function multilevelQueue(){
                   processes[k].waitingTime = processes[k].turnaroundTime - processes[k].burstTime;
                   count += 1;
                   flagIII = 1;
+
+                  //Gantt Chart Doing His Job
+                  tgantt.push({
+                    "process": processes[k].process,
+                    "start": currentTime,
+                    "end": processes[k].completeTime
+                  });
+                  
                   break;
                 }
               }
               
               //Background Doing His Job then Don't Need This Yet
               if(flagIII == 0){
-                math = processes[i].arrivalTime - currentTime;
-                currentTime = processes[i].arrivalTime;
+                math = processes[i].arrivalTime - currentTime;                
                 processes[k].remainingTime -= math;
 
                 //FCFS Finish Scheduling
@@ -327,7 +391,24 @@ function multilevelQueue(){
                   processes[k].turnaroundTime = processes[k].completeTime - processes[k].arrivalTime;
                   processes[k].waitingTime = processes[k].turnaroundTime - processes[k].burstTime;
                   count += 1;
+
+                  //Gantt Chart Doing His Job
+                  tgantt.push({
+                    "process": processes[k].process,
+                    "start": currentTime,
+                    "end": processes[k].completeTime
+                  });
                 }
+                else{
+                  
+                  //Gantt Chart Doing His Job
+                  tgantt.push({
+                    "process": processes[k].process,
+                    "start": currentTime,
+                    "end": processes[i].arrivalTime
+                  });        
+                }
+                currentTime = processes[i].arrivalTime;
                 break;
               }
               else{
@@ -368,7 +449,8 @@ function multilevelQueue(){
           if(processes[k].firstTimeExecute == 1){
             processes[k].responeTime = currentTime - processes[k].arrivalTime;
           }
-
+          
+          currentTimeTemp = currentTime;
           currentTime += processes[k].remainingTime;
           processes[k].available = 1;
           processes[k].remainingTime = 0;
@@ -377,6 +459,13 @@ function multilevelQueue(){
           processes[k].turnaroundTime = processes[k].completeTime - processes[k].arrivalTime;
           processes[k].waitingTime = processes[k].turnaroundTime - processes[k].burstTime;
           count += 1;
+          
+          //Gantt Chart Doing His Job
+          tgantt.push({
+            "process": processes[k].process,
+            "start": currentTimeTemp,
+            "end": processes[k].completeTime
+          });
 
           //Push Process Have Been Arrived
           for(i = 0; i < n; i++){
@@ -406,71 +495,6 @@ function multilevelQueue(){
   averageWaitingTime = (total_waitingTime / n).toFixed(2);
   averageResponeTime = (total_responeTime / n).toFixed(2);
 
-//   //output start here
-//   var output = document.getElementById('output');
-//   output.innerHTML = "";
-  
-//   //output averageResponeTime
-//   console.log("Respond time: "+averageResponeTime);
-//   var avrtimediv = document.createElement("div");
-//   avrtimediv.setAttribute("style", "text-align: center; margin: auto; width:100%; font-size: 20px;");
-//   avrtimediv.textContent=("Respone Time: " +averageResponeTime);
-//   output.appendChild(br);
-//   output.appendChild(avrtimediv);
-//   output.appendChild(br);
-//   ready.push(i);
-
-//   //output averageWaitingTime
-//   console.log("Waiting time: "+averageWaitingTime);
-//   var wtimediv = document.createElement("div");
-//   wtimediv.setAttribute("style", "text-align: center; margin: auto; width:100%; font-size: 20px;");
-//   wtimediv.textContent=("Waiting time: " + averageWaitingTime);
-//   output.appendChild(br);
-//   output.appendChild(wtimediv);
-//   output.appendChild(br);
-//   ready.push(i);
-
-//   //ouput averageTurnaroundTime
-//   console.log("Turnaround time: "+averageTurnaroundTime);
-//   var avttimediv = document.createElement("div");
-//   avttimediv.setAttribute("style", "text-align: center; margin: auto; width:100%; font-size: 20px;");
-//   avttimediv.textContent=("Turnaround Time: " +averageTurnaroundTime);
-//   output.appendChild(br);
-//   output.appendChild(avttimediv);
-//   output.appendChild(br);
-//   ready.push(i);
-
-//   //dữ liệu để test code taoj gantt chart
-//   var cpuQueue = [
-//     { start: processes[1].arrivalTime, end: processes[1].completeTime, color: '#FF5722' },
-//     { start: processes[2].arrivalTime, end: processes[2].completeTime, color: '#9C27B0' },
-//     { start: processes[3].arrivalTime, end: processes[3].completeTime, color: '#3F51B5' },
-//     { start: processes[4].arrivalTime, end: processes[4].completeTime, color: '#4CAF50' },
-//     { start: processes[5].arrivalTime, end: processes[5].completeTime, color: '#F44336' }
-//   ];
-
-//   //code tạo gantt chart
-//   var chart = document.getElementById('chart');
-//   chart.innerHTML = '';
-
-//   for (var i = 0; i < cpuQueue.length; i++) {
-//     var task = cpuQueue[i];
-//     var taskBar = document.createElement('div');
-//     taskBar.className = 'task-bar';
-//     taskBar.style.width = (task.end - task.start) * 30 + 'px';
-//     taskBar.style.backgroundColor = task.color;
-
-//     var taskLabel = document.createElement('span');
-//     taskLabel.textContent = 'P ' + (i + 1);
-
-//     taskBar.appendChild(taskLabel);
-//     chart.appendChild(br);
-//     chart.appendChild(taskBar);
-//     chart.appendChild(br);
-//     ready.push(i);
-//   }
-  
-  //Check Time in Console
   console.log("Respone Time");
   for(i = 0; i < n; i++){
     console.log(processes[i].responeTime);
@@ -489,6 +513,33 @@ function multilevelQueue(){
   console.log(averageResponeTime);
   console.log(averageWaitingTime);
   console.log(averageTurnaroundTime);
+
+  //Get Gantt Chart from Temporary Chart Tgantt[]
+  var pre = tgantt[0].process;
+  var begin = tgantt[0].start;
+  var stop;
+  for (var i = 1; i < tgantt.length; i++) {
+    if (tgantt[i].process == pre) {
+        continue;
+    }
+    else {
+        pre = tgantt[i].process;
+        stop = tgantt[i - 1].end;
+        gantt.push({
+            "id": tgantt[i - 1].process,
+            "start": begin,
+            "end": stop
+        });
+        begin = tgantt[i].start;
+    }
+  }
+  stop = tgantt[i - 1].end;
+
+  gantt.push({
+      "id": tgantt[i - 1].process,
+      "start": begin,
+      "end": stop
+  });
 }
 
 function showOutput(){
@@ -503,5 +554,152 @@ function showOutput(){
     processes[i].available = 0;
   }
 
-  multilevelQueue()
+  multilevelQueue();
+
+  //This is For Output Table
+  var table = document.getElementById("processTable");
+  table.innerHTML = "";
+  var thead = document.getElementById("tableHead");
+  thead.innerHTML = "";
+
+  var tableTitle = document.createElement("tr");
+  var tableHeading1 = document.createElement("th");
+  tableHeading1.textContent = "Process ID";
+  tableTitle.appendChild(tableHeading1);
+
+  var tableHeading2 = document.createElement("th");
+  tableHeading2.textContent = "Arrival Time";
+  tableTitle.appendChild(tableHeading2);
+  
+  var tableHeading3 = document.createElement("th");
+  tableHeading3.textContent = "Burst Time";
+  tableTitle.appendChild(tableHeading3);
+
+  var tableHeading4 = document.createElement("th");
+  tableHeading4.textContent = "Completion Time";
+  tableTitle.appendChild(tableHeading4);
+
+  var tableHeading5 = document.createElement("th");
+  tableHeading5.textContent = "Respond Time";
+  tableTitle.appendChild(tableHeading5);
+
+  var tableHeading6 = document.createElement("th");
+  tableHeading6.textContent = "Waiting Time";
+  tableTitle.appendChild(tableHeading6);
+
+  var tableHeading7 = document.createElement("th");
+  tableHeading7.textContent = "Turnaround Time";
+  tableTitle.appendChild(tableHeading7);
+
+  var tableHeading8 = document.createElement("th");
+  tableHeading8.textContent = "Queue";
+  tableTitle.appendChild(tableHeading8);
+  
+  thead.appendChild(tableTitle);
+  drawTable();
+
+  //This is For Average Time
+  var art2 = document.getElementById("art1");
+  var awt2 = document.getElementById("awt1");
+  var atat2 = document.getElementById("atat1");
+  art2.innerHTML = "";
+  awt2.innerHTML = "";
+  atat2.innerHTML = "";
+
+  var p1 = document.createElement("p");
+  p1.textContent = "Average Respone Time: " + averageResponeTime + " m/s";
+  awt2.appendChild(p1);
+  var p2 = document.createElement("p");
+  p2.textContent = "Average Waiting Time: " + averageWaitingTime + " m/s";
+  awt2.appendChild(p2);
+  var p3 = document.createElement("p");
+  p3.textContent = "Average Turnaround Time: " + averageTurnaroundTime + " m/s"; 
+  atat2.appendChild(p3);
+
+  //This is For Gantt Chart
+  var gt = document.getElementById("gantt");
+  gt.innerHTML = "";
+  var timer1 = document.getElementById("timer");
+  timer1.innerHTML = "";
+
+  drawGanttChart();
+}
+
+function drawTable(){
+  var table = document.getElementById("processTable");
+  processes.sort(function (a, b){
+    return a.process - b.process;
+  });
+
+  for(var i = 0; i < processes.length; i++){
+    var tableBody = document.createElement("tr");
+    var tableContent1 = document.createElement("td");
+    tableContent1.innerHTML =  processes[i].process;
+    tableBody.appendChild(tableContent1);
+
+    var tableContent2 = document.createElement("td");
+    tableContent2.innerHTML = processes[i].arrivalTime;
+    tableBody.appendChild(tableContent2);
+
+    var tableContent3 = document.createElement("td");
+    tableContent3.innerHTML = processes[i].burstTime;
+    tableBody.appendChild(tableContent3);
+
+    var tableContent4 = document.createElement("td");
+    tableContent4.innerHTML = processes[i].completeTime;
+    tableBody.appendChild(tableContent4);
+
+    var tableContent5 = document.createElement("td");
+    tableContent5.innerHTML = processes[i].responeTime;
+    tableBody.appendChild(tableContent5);
+
+    var tableContent6 = document.createElement("td");
+    tableContent6.innerHTML = processes[i].waitingTime;
+    tableBody.appendChild(tableContent6);
+
+    var tableContent7 = document.createElement("td");
+    tableContent7.innerHTML = processes[i].turnaroundTime;
+    tableBody.appendChild(tableContent7);
+
+    var tableContent8 = document.createElement("td");
+    tableContent8.innerHTML = processes[i].typeSche;
+    tableBody.appendChild(tableContent8);
+
+    table.appendChild(tableBody);
+  }
+}
+
+function drawGanttChart(){
+  var gt = document.getElementById("gantt");
+  var timer1 = document.getElementById("timer");
+  var br = document.createElement("br");
+  pixel = 800 / currentTime;
+
+  for (var i = 0; i < gantt.length; i++) {
+    var divWidth = (gantt[i].end - gantt[i].start) * pixel;
+    var d = document.createElement("div");
+    d.setAttribute("class", "block");
+    var id1 = gantt[i].id;
+    d.setAttribute("id", "P-" + gantt[i].id);
+    
+    if (gantt[i].id == -1) {
+        d.textContent = "";
+        d.setAttribute("style", "float: left; width: " + divWidth + "px; height: 50px;");
+    }
+    else {
+        d.setAttribute("style", "float: left; width: "+divWidth+"px; height: 50px; background-color: "+ colors[id1 - 1] +"; font-size: 20px; text-align: center;");
+        d.textContent = "P-" + gantt[i].id;
+    }
+    gt.appendChild(d); 
+    var d1 = document.createElement("div");
+    d1.setAttribute("style", "float: left; width: " + divWidth + "px; text-align: left;");
+    d1.textContent = gantt[i].start;
+    timer1.appendChild(d1);
+  }
+
+  var d1 = document.createElement("div");
+  d1.setAttribute("style", "float: left; width: 3px");
+  d1.textContent = "End " + gantt[i-1].end;
+  timer1.appendChild(d1);
+  timer1.appendChild(br);
 }

@@ -66,19 +66,9 @@ function addProcess() {
       available: 0,
       finish: 0,
       typeSche: typeSche,
-      color: getRandomColor()
     });
   }
   process += 1;
-}
-
-function getRandomColor() {
-  var letters = '0123456789ABCDEF';
-  var color = '#';
-  for (var i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)];
-  }
-  return color;
 }
 
 function clearData(){
@@ -109,6 +99,89 @@ function clearData(){
   averageResponeTime = 0.0;
   gantt = [];
   console.clear();
+}
+
+function showOutput(){
+  if(processes.length <= 0){
+    alert("No Process to Schedule!");
+    return;
+  }
+
+  for(let i = 0; i < processes.length; i++){
+    processes[i].remainingTime = processes[i].burstTime;
+    processes[i].finish = 0;
+    processes[i].available = 0;
+  }
+
+  multilevelQueue();
+
+  //This is For Output Table
+  var table = document.getElementById("processTable");
+  table.innerHTML = "";
+  var thead = document.getElementById("tableHead");
+  thead.innerHTML = "";
+
+  var tableTitle = document.createElement("tr");
+  var tableHeading1 = document.createElement("th");
+  tableHeading1.textContent = "Process ID";
+  tableTitle.appendChild(tableHeading1);
+
+  var tableHeading2 = document.createElement("th");
+  tableHeading2.textContent = "Arrival Time";
+  tableTitle.appendChild(tableHeading2);
+  
+  var tableHeading3 = document.createElement("th");
+  tableHeading3.textContent = "Burst Time";
+  tableTitle.appendChild(tableHeading3);
+
+  var tableHeading4 = document.createElement("th");
+  tableHeading4.textContent = "Completion Time";
+  tableTitle.appendChild(tableHeading4);
+
+  var tableHeading5 = document.createElement("th");
+  tableHeading5.textContent = "Respond Time";
+  tableTitle.appendChild(tableHeading5);
+
+  var tableHeading6 = document.createElement("th");
+  tableHeading6.textContent = "Waiting Time";
+  tableTitle.appendChild(tableHeading6);
+
+  var tableHeading7 = document.createElement("th");
+  tableHeading7.textContent = "Turnaround Time";
+  tableTitle.appendChild(tableHeading7);
+
+  var tableHeading8 = document.createElement("th");
+  tableHeading8.textContent = "Queue";
+  tableTitle.appendChild(tableHeading8);
+  
+  thead.appendChild(tableTitle);
+  drawTable();
+
+  //This is For Average Time
+  var art2 = document.getElementById("art1");
+  var awt2 = document.getElementById("awt1");
+  var atat2 = document.getElementById("atat1");
+  art2.innerHTML = "";
+  awt2.innerHTML = "";
+  atat2.innerHTML = "";
+
+  var p1 = document.createElement("p");
+  p1.textContent = "Average Respone Time: " + averageResponeTime + " m/s";
+  awt2.appendChild(p1);
+  var p2 = document.createElement("p");
+  p2.textContent = "Average Waiting Time: " + averageWaitingTime + " m/s";
+  awt2.appendChild(p2);
+  var p3 = document.createElement("p");
+  p3.textContent = "Average Turnaround Time: " + averageTurnaroundTime + " m/s"; 
+  atat2.appendChild(p3);
+
+  //This is For Gantt Chart
+  var gt = document.getElementById("gantt");
+  gt.innerHTML = "";
+  var timer1 = document.getElementById("timer");
+  timer1.innerHTML = "";
+
+  drawGanttChart();
 }
 
 function multilevelQueue(){
@@ -256,21 +329,26 @@ function multilevelQueue(){
         //Check If There Are Still Foreground Process Haven't Done Yet
         var flag = 0;
         var flagII = 0;
+        var flagIV = 0;
         for(i = 0; i < n; i++){
           if(processes[i].typeSche == "Foreground" && processes[i].finish == 0){
             flag = 1;
 
+            //Check If There Are Foreground Process Before Background At Current Time = 0
+            if(processes[i].arrivalTime == 0){
+              flagIV = 0;
+            }
+            
             //Check If There Are Foreground Process Have Arrive Time More than Current Time
-            if(processes[i].arrivalTime >= currentTime){
+            if(processes[i].arrivalTime > currentTime){
               flagII = 1;
-              break;
             }
             break;
           }
         }
 
         //Current Time = 0 Have Both Foreground && Background but Background First so Background Prioties Foreground
-        if(flag == 1 && currentTime == 0){
+        if(flag == 1 && currentTime == 0 && flagIV == 1){
           var newdiv = document.createElement("div");
           newdiv.setAttribute("style", "text-align: center; margin: auto; width:100%; font-size: 20px;");
           newdiv.textContent = "<< This Process-" + processes[k].process + " is in Background Queue so It Been Push Back to Last Queue >>";
@@ -278,55 +356,6 @@ function multilevelQueue(){
           operation.appendChild(newdiv);
           operation.appendChild(br);
           ready.push(k);
-        }
-
-        //There Are Still Foreground Processes Left
-        else if(flag == 1 && processes[k].available == 0){
-          processes[k].remainingTime -= 1;
-          processes[k].available = 1;
-        
-          //Process First Time Being Execute
-          processes[k].firstTimeExecute += 1;
-          if(processes[k].firstTimeExecute == 1){
-            processes[k].responeTime = currentTime - processes[k].arrivalTime;
-          }
-
-          //FCFS Finish Scheduling
-          if(processes[k].remainingTime == 0){
-            processes[k].finish = 1;
-            processes[k].completeTime = currentTime + 1;
-            processes[k].turnaroundTime = processes[k].completeTime - processes[k].arrivalTime;
-            processes[k].waitingTime = processes[k].turnaroundTime - processes[k].burstTime;
-            count += 1;
-
-            //Gantt Chart Doing His Job
-            tgantt.push({
-              "process": processes[k].process,
-              "start": currentTime,
-              "end": processes[k].completeTime
-            });
-          }else{
-            
-            //Gantt Chart Doing His Job
-            tgantt.push({
-              "process": processes[k].process,
-              "start": currentTime,
-              "end": currentTime + 1
-            });
-          }
-          currentTime += 1;
-
-          //Push Process Have Been Arrived But not Done Scheduling
-          for(i = 0; i < n; i++){
-            if(processes[i].arrivalTime <= currentTime && processes[i].finish == 0 && processes[i].available == 0){
-              ready.push(i);
-            }
-          }    
-
-          //FCFS Been Interupted By RR
-          if(processes[k].remainingTime > 0){
-            ready.push(k);
-          }
         }
 
         //Execute Background Process Until Foreground Process Arrive Time
@@ -540,89 +569,6 @@ function multilevelQueue(){
       "start": begin,
       "end": stop
   });
-}
-
-function showOutput(){
-  if(processes.length <= 0){
-    alert("No Process to Schedule!");
-    return;
-  }
-
-  for(let i = 0; i < processes.length; i++){
-    processes[i].remainingTime = processes[i].burstTime;
-    processes[i].finish = 0;
-    processes[i].available = 0;
-  }
-
-  multilevelQueue();
-
-  //This is For Output Table
-  var table = document.getElementById("processTable");
-  table.innerHTML = "";
-  var thead = document.getElementById("tableHead");
-  thead.innerHTML = "";
-
-  var tableTitle = document.createElement("tr");
-  var tableHeading1 = document.createElement("th");
-  tableHeading1.textContent = "Process ID";
-  tableTitle.appendChild(tableHeading1);
-
-  var tableHeading2 = document.createElement("th");
-  tableHeading2.textContent = "Arrival Time";
-  tableTitle.appendChild(tableHeading2);
-  
-  var tableHeading3 = document.createElement("th");
-  tableHeading3.textContent = "Burst Time";
-  tableTitle.appendChild(tableHeading3);
-
-  var tableHeading4 = document.createElement("th");
-  tableHeading4.textContent = "Completion Time";
-  tableTitle.appendChild(tableHeading4);
-
-  var tableHeading5 = document.createElement("th");
-  tableHeading5.textContent = "Respond Time";
-  tableTitle.appendChild(tableHeading5);
-
-  var tableHeading6 = document.createElement("th");
-  tableHeading6.textContent = "Waiting Time";
-  tableTitle.appendChild(tableHeading6);
-
-  var tableHeading7 = document.createElement("th");
-  tableHeading7.textContent = "Turnaround Time";
-  tableTitle.appendChild(tableHeading7);
-
-  var tableHeading8 = document.createElement("th");
-  tableHeading8.textContent = "Queue";
-  tableTitle.appendChild(tableHeading8);
-  
-  thead.appendChild(tableTitle);
-  drawTable();
-
-  //This is For Average Time
-  var art2 = document.getElementById("art1");
-  var awt2 = document.getElementById("awt1");
-  var atat2 = document.getElementById("atat1");
-  art2.innerHTML = "";
-  awt2.innerHTML = "";
-  atat2.innerHTML = "";
-
-  var p1 = document.createElement("p");
-  p1.textContent = "Average Respone Time: " + averageResponeTime + " m/s";
-  awt2.appendChild(p1);
-  var p2 = document.createElement("p");
-  p2.textContent = "Average Waiting Time: " + averageWaitingTime + " m/s";
-  awt2.appendChild(p2);
-  var p3 = document.createElement("p");
-  p3.textContent = "Average Turnaround Time: " + averageTurnaroundTime + " m/s"; 
-  atat2.appendChild(p3);
-
-  //This is For Gantt Chart
-  var gt = document.getElementById("gantt");
-  gt.innerHTML = "";
-  var timer1 = document.getElementById("timer");
-  timer1.innerHTML = "";
-
-  drawGanttChart();
 }
 
 function drawTable(){

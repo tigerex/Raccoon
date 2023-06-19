@@ -157,11 +157,6 @@ function multilevelQueue(){
     //There is Process have Arrive Time = 0
     else{
 
-      // //Show Operation CPU is Idle
-      // for(i = 0; i < n; i++){
-
-      // }
-
       //Show Which Process Being Executed
       var newdiv = document.createElement("div");
       newdiv.setAttribute("style", "text-align: center; margin: auto; width:100%; font-size: 20px;");

@@ -124,7 +124,9 @@ function multilevelQueue(){
 
   //Execute Processes
   while(done != 1){
-    console.log(currentTime + " :CPU is ready for next task");
+//     console.log(currentTime + " :CPU is ready for next task");
+    console.log(currentTime);
+    console.log(ready);
     k = ready.shift();
     var currentTimeTemp;
 

@@ -404,69 +404,89 @@ function multilevelQueue(){
   averageWaitingTime = (total_waitingTime / n).toFixed(2);
   averageResponeTime = (total_responeTime / n).toFixed(2);
 
-  //output start here
-  var output = document.getElementById('output');
-  output.innerHTML = "";
+//   //output start here
+//   var output = document.getElementById('output');
+//   output.innerHTML = "";
   
-  //output averageResponeTime
-  console.log("Respond time: "+averageResponeTime);
-  var avrtimediv = document.createElement("div");
-  avrtimediv.setAttribute("style", "text-align: center; margin: auto; width:100%; font-size: 20px;");
-  avrtimediv.textContent=("Respone Time: " +averageResponeTime);
-  output.appendChild(br);
-  output.appendChild(avrtimediv);
-  output.appendChild(br);
-  ready.push(i);
+//   //output averageResponeTime
+//   console.log("Respond time: "+averageResponeTime);
+//   var avrtimediv = document.createElement("div");
+//   avrtimediv.setAttribute("style", "text-align: center; margin: auto; width:100%; font-size: 20px;");
+//   avrtimediv.textContent=("Respone Time: " +averageResponeTime);
+//   output.appendChild(br);
+//   output.appendChild(avrtimediv);
+//   output.appendChild(br);
+//   ready.push(i);
 
-  //output averageWaitingTime
-  console.log("Waiting time: "+averageWaitingTime);
-  var wtimediv = document.createElement("div");
-  wtimediv.setAttribute("style", "text-align: center; margin: auto; width:100%; font-size: 20px;");
-  wtimediv.textContent=("Waiting time: " + averageWaitingTime);
-  output.appendChild(br);
-  output.appendChild(wtimediv);
-  output.appendChild(br);
-  ready.push(i);
+//   //output averageWaitingTime
+//   console.log("Waiting time: "+averageWaitingTime);
+//   var wtimediv = document.createElement("div");
+//   wtimediv.setAttribute("style", "text-align: center; margin: auto; width:100%; font-size: 20px;");
+//   wtimediv.textContent=("Waiting time: " + averageWaitingTime);
+//   output.appendChild(br);
+//   output.appendChild(wtimediv);
+//   output.appendChild(br);
+//   ready.push(i);
 
-  //ouput averageTurnaroundTime
-  console.log("Turnaround time: "+averageTurnaroundTime);
-  var avttimediv = document.createElement("div");
-  avttimediv.setAttribute("style", "text-align: center; margin: auto; width:100%; font-size: 20px;");
-  avttimediv.textContent=("Turnaround Time: " +averageTurnaroundTime);
-  output.appendChild(br);
-  output.appendChild(avttimediv);
-  output.appendChild(br);
-  ready.push(i);
+//   //ouput averageTurnaroundTime
+//   console.log("Turnaround time: "+averageTurnaroundTime);
+//   var avttimediv = document.createElement("div");
+//   avttimediv.setAttribute("style", "text-align: center; margin: auto; width:100%; font-size: 20px;");
+//   avttimediv.textContent=("Turnaround Time: " +averageTurnaroundTime);
+//   output.appendChild(br);
+//   output.appendChild(avttimediv);
+//   output.appendChild(br);
+//   ready.push(i);
 
-  //dữ liệu để test code taoj gantt chart
-  var cpuQueue = [
-    { start: processes[1].arrivalTime, end: processes[1].completeTime, color: '#FF5722' },
-    { start: processes[2].arrivalTime, end: processes[2].completeTime, color: '#9C27B0' },
-    { start: processes[3].arrivalTime, end: processes[3].completeTime, color: '#3F51B5' },
-    { start: processes[4].arrivalTime, end: processes[4].completeTime, color: '#4CAF50' },
-    { start: processes[5].arrivalTime, end: processes[5].completeTime, color: '#F44336' }
-  ];
+//   //dữ liệu để test code taoj gantt chart
+//   var cpuQueue = [
+//     { start: processes[1].arrivalTime, end: processes[1].completeTime, color: '#FF5722' },
+//     { start: processes[2].arrivalTime, end: processes[2].completeTime, color: '#9C27B0' },
+//     { start: processes[3].arrivalTime, end: processes[3].completeTime, color: '#3F51B5' },
+//     { start: processes[4].arrivalTime, end: processes[4].completeTime, color: '#4CAF50' },
+//     { start: processes[5].arrivalTime, end: processes[5].completeTime, color: '#F44336' }
+//   ];
 
-  //code tạo gantt chart
-  var chart = document.getElementById('chart');
-  chart.innerHTML = '';
+//   //code tạo gantt chart
+//   var chart = document.getElementById('chart');
+//   chart.innerHTML = '';
 
-  for (var i = 0; i < cpuQueue.length; i++) {
-    var task = cpuQueue[i];
-    var taskBar = document.createElement('div');
-    taskBar.className = 'task-bar';
-    taskBar.style.width = (task.end - task.start) * 30 + 'px';
-    taskBar.style.backgroundColor = task.color;
+//   for (var i = 0; i < cpuQueue.length; i++) {
+//     var task = cpuQueue[i];
+//     var taskBar = document.createElement('div');
+//     taskBar.className = 'task-bar';
+//     taskBar.style.width = (task.end - task.start) * 30 + 'px';
+//     taskBar.style.backgroundColor = task.color;
 
-    var taskLabel = document.createElement('span');
-    taskLabel.textContent = 'P ' + (i + 1);
+//     var taskLabel = document.createElement('span');
+//     taskLabel.textContent = 'P ' + (i + 1);
 
-    taskBar.appendChild(taskLabel);
-    chart.appendChild(br);
-    chart.appendChild(taskBar);
-    chart.appendChild(br);
-    ready.push(i);
+//     taskBar.appendChild(taskLabel);
+//     chart.appendChild(br);
+//     chart.appendChild(taskBar);
+//     chart.appendChild(br);
+//     ready.push(i);
+//   }
+  
+  //Check Time in Console
+  console.log("Respone Time");
+  for(i = 0; i < n; i++){
+    console.log(processes[i].responeTime);
   }
+
+  console.log("Waiting Time");
+  for(i = 0; i < n; i++){
+    console.log(processes[i].waitingTime);
+  }
+
+  console.log("Turnaround Time");
+  for(i = 0; i < n; i++){
+    console.log(processes[i].turnaroundTime);
+  }
+
+  console.log(averageResponeTime);
+  console.log(averageWaitingTime);
+  console.log(averageTurnaroundTime);
 }
 
 function showOutput(){

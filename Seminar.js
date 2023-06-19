@@ -1,11 +1,50 @@
 var processes = [];
 var process = 1;
+var quantum = 0;
+var quantumIsSet = 0;
 var currentTime = 0;
 var averageWaitingTime = 0.0;
 var averageTurnaroundTime = 0.0;
 var averageResponeTime = 0.0;
 var gantt = [];
 var colors = ["#FF0000", "#05FF00", "#F2FF00", "#00C9FF", "#FF00F5", "#FF9100", "#004FFF", "#8000FF", "#00FFA3", "#B4CF49"];
+
+function setQuantum(){
+  var quantumInput = document.getElementById("quantum");
+  var quantum1 = parseInt(quantumInput.value);
+  
+  //Check Quantum
+  if (isNaN(quantum1)) {
+    window.alert("Please enter valid inputs");
+    return;
+  }
+  
+  if (quantum1 <= 0) {
+    window.alert("Invalid Inputs");
+    return;
+  }
+
+  if(quantumIsSet == 1){
+    window.alert("Quantum Has Been Set");
+    return;
+  }
+
+  if(!isNaN(quantum1) && quantum1 > 0){
+    
+    //Show Quantum
+    var showQuantum = document.getElementById("quantumNumber");
+    var p = document.createElement('pi');
+    p.setAttribute("style", "text-align: center; margin: auto; width:100%; font-size: 20px;");
+    p.textContent = "Quantum = " + quantum1;
+    showQuantum.appendChild(p);
+    quantumInput.value = '';
+  
+    //Saved Quantum
+    quantum = quantum1;
+    quantumIsSet = 1;
+    console.log("Quantum:" + quantum);
+  }
+}
 
 function addProcess() {
   var burstTimeInput = document.getElementById('burstTimeInput');
@@ -17,6 +56,11 @@ function addProcess() {
   var typeSche = typeScheInput.value;
 
   //Check Input
+  if(quantumIsSet == 0){
+    window.alert("Set Quantum First");
+    return;
+  }
+
   if (isNaN(arrivalTime) && isNaN(burstTime)) {
     window.alert("Please enter valid inputs");
     return;
@@ -74,6 +118,8 @@ function addProcess() {
 function clearData(){
   var cleanList = document.getElementById("processList");
   cleanList.innerHTML = "";
+  var showQuantum = document.getElementById("quantumNumber");
+  showQuantum.innerHTML = "";
   var cleanOperation = document.getElementById('operations');
   cleanOperation.innerHTML = "";
   var table = document.getElementById("processTable");
@@ -93,6 +139,8 @@ function clearData(){
 
   processes = [];
   process = 1;
+  quantum = 0;
+  quantumIsSet = 0;
   currentTime = 0;
   averageWaitingTime = 0.0;
   averageTurnaroundTime = 0.0;
@@ -197,7 +245,6 @@ function multilevelQueue(){
   gantt = [];
   currentTime = 0;
   var tgantt = [];
-  var quantum = 2;
   var n = processes.length;
   var done = 0;
   var count = 0;
@@ -215,8 +262,8 @@ function multilevelQueue(){
 
   //Execute Processes
   while(done != 1){
-    console.log(currentTime);
-    console.log(ready);
+    console.log("Current Time: " + currentTime);
+    console.log("Ready: " + ready);
     k = ready.shift();
     var currentTimeTemp = 0;
 
@@ -336,7 +383,7 @@ function multilevelQueue(){
 
             //Check If There Are Foreground Process Before Background At Current Time = 0
             if(processes[i].arrivalTime == 0){
-              flagIV = 0;
+              flagIV = 1;
             }
             
             //Check If There Are Foreground Process Have Arrive Time More than Current Time

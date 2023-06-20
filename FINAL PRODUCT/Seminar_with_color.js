@@ -830,7 +830,7 @@ function drawGanttChart(){
         d.setAttribute("style", "float: left; width: " + divWidth + "px; height: 50px;");
     }
     else {
-        d.setAttribute("style", "float: left; width: "+divWidth+"px; height: 50px; background-color: "+ colors[id1 - 1] +"; font-size: 20px; text-align: center;");
+        d.setAttribute("style", "float: left; width: "+divWidth+"px; height: 50px; background-color: "+ getRandomColor() +"; font-size: 20px; text-align: center;");
         d.textContent = "P-" + gantt[i].id;
     }
     gt.appendChild(d); 

@@ -444,7 +444,7 @@ function multilevelQueue(){
                   //Gantt Chart Doing his Job
                   tgantt.push({
                     "process": processes[k].process,
-                    "start": currentTime,
+                    "start": currentTimeTemp,
                     "end": processes[k].completeTime
                   });
                   

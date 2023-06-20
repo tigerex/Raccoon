@@ -189,7 +189,7 @@ function multilevelQueue(){
       
       var ewqtdiv = document.createElement("div"); //ewqt = enter waiting queue time
       ewqtdiv.setAttribute("style", "text-align: left; margin: auto; width:100%; font-size: 20px;");
-      ewqtdiv.style.color = "blue";
+      ewqtdiv.style.color = "#00eeff";
       ewqtdiv.textContent = "T = " + processes[i].arrivalTime + " : Process-" + processes[i].process + " Arrives and Has Beed Pushed To READY Queue";
       operation.appendChild(br);
       operation.appendChild(ewqtdiv);
@@ -257,7 +257,7 @@ function multilevelQueue(){
 
           var first_time = document.createElement("div");
           first_time.setAttribute("style", "color: blur; text-align: left; margin: auto; width:100%; font-size: 20px;");
-          first_time.style.color = "green"; 
+          first_time.style.color = "#00ff40"; 
           first_time.textContent = "T = " + currentTime + " : Process-" + processes[k].process + " ARRIVES at CPU and Is RUNNING";
           operation.appendChild(br);
           operation.appendChild(first_time);
@@ -266,7 +266,7 @@ function multilevelQueue(){
           //Show Which Process Being Executed
           var enterCPUdiv = document.createElement("div");
           enterCPUdiv.setAttribute("style", "color: blur; text-align: left; margin: auto; width:100%; font-size: 20px;");
-          enterCPUdiv.style.color = "green"; 
+          enterCPUdiv.style.color = "#00ff40"; 
           enterCPUdiv.textContent = "T = " + currentTime + " : Process-" + processes[k].process + " Enteres CPU and Is RUNNING";
           operation.appendChild(br);
           operation.appendChild(enterCPUdiv);
@@ -294,7 +294,7 @@ function multilevelQueue(){
           currentTime = processes[k].completeTime;
           var tcdiv = document.createElement("div"); //tc = time completion
           tcdiv.setAttribute("style", "text-align: left; margin: auto; width:100%; font-size: 20px; ter");
-          tcdiv.style.color = "red";
+          tcdiv.style.color = "#fd504a";
           tcdiv.textContent = "T = " + currentTime + " : Process-" + processes[k].process + " Has Beed Completed and TERMINATED";
           operation.appendChild(br);
           operation.appendChild(tcdiv);
@@ -325,7 +325,7 @@ function multilevelQueue(){
             //show that said process has arrived and is waiting
             var ewqtdiv = document.createElement("div"); //ewqt = enter waiting queue time
             ewqtdiv.setAttribute("style", "text-align: left; margin: auto; width:100%; font-size: 20px;");
-            ewqtdiv.style.color = "blue";
+            ewqtdiv.style.color = "#00eeff";
             ewqtdiv.textContent = "T = " + processes[i].arrivalTime + " : Process-" + processes[i].process + " Arrives and Has Beed Pushed To READY Queue";
             operation.appendChild(br);
             operation.appendChild(ewqtdiv);
@@ -340,7 +340,7 @@ function multilevelQueue(){
           //show that proccess has been pushed to ready queue
           var ewqtdiv = document.createElement("div"); //ewqt = enter waiting queue time
           ewqtdiv.setAttribute("style", "text-align: left; margin: auto; width:100%; font-size: 20px;");
-          ewqtdiv.style.color = "blue";
+          ewqtdiv.style.color = "#00eeff";
           ewqtdiv.textContent = "T = " + currentTime + " : Process-" + processes[k].process + " Has Beed Pushed To READY Queue";
           operation.appendChild(br);
           operation.appendChild(ewqtdiv);
@@ -396,7 +396,7 @@ function multilevelQueue(){
             //arrives at CPU and RUN
             var first_time = document.createElement("div");
             first_time.setAttribute("style", "color: blur; text-align: left; margin: auto; width:100%; font-size: 20px;");
-            first_time.style.color = "green"; 
+            first_time.style.color = "#00ff40"; 
             first_time.textContent = "T = " + currentTime + " : Process-" + processes[k].process + " ARRIVES at CPU and Is RUNNING";
             operation.appendChild(br);
             operation.appendChild(first_time);
@@ -435,7 +435,7 @@ function multilevelQueue(){
                   //enter CPU and RUN
                   var enterCPUdiv = document.createElement("div");
                   enterCPUdiv.setAttribute("style", "color: blur; text-align: left; margin: auto; width:100%; font-size: 20px;");
-                  enterCPUdiv.style.color = "green"; 
+                  enterCPUdiv.style.color = "#00ff40"; 
                   enterCPUdiv.textContent = "T = " + currentTime + " : Process-" + processes[k].process + " Enters CPU and Is RUNNING";
                   operation.appendChild(br);
                   operation.appendChild(enterCPUdiv);
@@ -469,7 +469,7 @@ function multilevelQueue(){
                   //terminated
                   var tcdiv = document.createElement("div"); //tc = time completion
                   tcdiv.setAttribute("style", "text-align: left; margin: auto; width:100%; font-size: 20px; ter");
-                  tcdiv.style.color = "red";
+                  tcdiv.style.color = "#fd504a";
                   tcdiv.textContent = "T = " + currentTime + " : Process-" + processes[k].process + " Has Been Completed and TERMINATED";
                   operation.appendChild(br);
                   operation.appendChild(tcdiv);
@@ -522,7 +522,7 @@ function multilevelQueue(){
             //enter ready queue
             var ewqtdiv = document.createElement("div"); //ewqt = enter waiting queue time
             ewqtdiv.setAttribute("style", "text-align: left; margin: auto; width:100%; font-size: 20px;");
-            ewqtdiv.style.color = "blue";
+            ewqtdiv.style.color = "#00eeff";
             ewqtdiv.textContent = "T = " + currentTime + " : Process-" + processes[k].process + " Has Beed Pushed To READY Queue";
             operation.appendChild(br);
             operation.appendChild(ewqtdiv);
@@ -552,7 +552,7 @@ function multilevelQueue(){
             var all_Foreground_done = document.createElement("div"); //ewqt = enter waiting queue time
             all_Foreground_done.setAttribute("style", "text-align: left; margin: auto; width:100%; font-size: 20px;");
             all_Foreground_done.style.color = "#1a0404";
-            all_Foreground_done.style.backgroundColor = "red";
+            all_Foreground_done.style.backgroundColor = "#fd504a";
             all_Foreground_done.textContent = "T = " + currentTime + " NO Foreground Process Remain!";
             operation.appendChild(br);
             operation.appendChild(all_Foreground_done);
@@ -567,7 +567,7 @@ function multilevelQueue(){
 
             var first_time = document.createElement("div");
             first_time.setAttribute("style", "color: blur; text-align: left; margin: auto; width:100%; font-size: 20px;");
-            first_time.style.color = "green"; 
+            first_time.style.color = "#00ff40"; 
             first_time.textContent = "T = " + currentTime + " : Process-" + processes[k].process + " ARRIVES at CPU and Is RUNNING";
             operation.appendChild(br);
             operation.appendChild(first_time);
@@ -592,7 +592,7 @@ function multilevelQueue(){
 
               var ewqtdiv = document.createElement("div"); //ewqt = enter waiting queue time
               ewqtdiv.setAttribute("style", "text-align: left; margin: auto; width:100%; font-size: 20px;");
-              ewqtdiv.style.color = "blue";
+              ewqtdiv.style.color = "#00eeff";
               ewqtdiv.textContent = "T = " + processes[i].arrivalTime + " : Process-" + processes[i].process + " ARRIVES and has Been Pushed To READY Queue";
               operation.appendChild(br);
               operation.appendChild(ewqtdiv);
@@ -603,7 +603,7 @@ function multilevelQueue(){
           //terminated
           var tcdiv = document.createElement("div"); //tc = time completion
           tcdiv.setAttribute("style", "text-align: left; margin: auto; width:100%; font-size: 20px; ter");
-          tcdiv.style.color = "red";
+          tcdiv.style.color = "#fd504a";
           tcdiv.textContent = "T = " + currentTime + " : Process-" + processes[k].process + " Has Been Completed and TERMINATED";
           operation.appendChild(br);
           operation.appendChild(tcdiv);

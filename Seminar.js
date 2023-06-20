@@ -382,7 +382,7 @@ function multilevelQueue(){
             flag = 1;
 
             //Check If There Are Foreground Process Before Background At Current Time = 0
-            if(processes[i].arrivalTime == 0){
+            if(processes[i].arrivalTime <= 0){
               flagIV = 1;
             }
             
@@ -395,7 +395,7 @@ function multilevelQueue(){
         }
 
         //Current Time = 0 Have Both Foreground && Background but Background First so Background Prioties Foreground
-        if(flag == 1 && currentTime == 0 && flagIV == 1){
+        if(flag == 1 && flagIV == 1){
           var newdiv = document.createElement("div");
           newdiv.setAttribute("style", "text-align: center; margin: auto; width:100%; font-size: 20px;");
           newdiv.textContent = "<< This Process-" + processes[k].process + " is in Background Queue so It Been Push Back to Last Queue >>";

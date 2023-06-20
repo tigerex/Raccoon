@@ -318,7 +318,7 @@ function multilevelQueue(){
 
         //Push Process Have Arrive Time Between Quantum Processing
         for(i = 0; i < n; i++){
-          if(processes[i].arrivalTime > currentTime - quantum && processes[i].arrivalTime <= currentTime){
+          if(processes[i].arrivalTime > currentTime - quantum && processes[i].arrivalTime <= currentTime && processes[i].finish == 0){
             processes[i].available = 1;
             ready.push(i);
 

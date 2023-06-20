@@ -360,7 +360,7 @@ function multilevelQueue(){
             flag = 1;
 
             //Check If There Are Foreground Process Before Background At Current Time = 0
-            if(processes[i].arrivalTime == 0){
+            if(processes[i].arrivalTime <= 0){
               flagIV = 1;
             }
             
@@ -373,7 +373,7 @@ function multilevelQueue(){
         }
 
         //Current Time = 0 Have Both Foreground && Background but Foreground First so Background Priotized Foreground
-        if(flag == 1 && currentTime == 0 && flagIV == 1){
+        if(flag == 1 && flagIV == 1){
           ready.push(k);
           var Interupted = document.createElement("div");
             Interupted.setAttribute("style", "text-align: left; margin: auto; width:100%; font-size: 20px;");

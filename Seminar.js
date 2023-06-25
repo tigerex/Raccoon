@@ -452,14 +452,12 @@ function multilevelQueue(){
           });
         }
         else if(k2.remainingTime > 0){
-          console.log("chay mot lan thoi ma");
           background.push(k2);
         }
       }
     }
 
     if(count != n && foreground.length == 0 && background.length == 0){
-      console.log("No vo dieu kien nay kia ba");
       var newdiv = document.createElement("div");
       newdiv.setAttribute("style", "text-align: center; margin: auto; width:100%; font-size: 20px;");
       newdiv.textContent = "Current Time = " + currentTime + ": CPU is Idle.";
@@ -471,8 +469,9 @@ function multilevelQueue(){
       currentTime += 1;
       opening();
     }
-    else if(count == n && foreground.length == 0 && background.length == 0)
+    else if(count == n && foreground.length == 0 && background.length == 0){
       done = 1;
+    }
   }
 
   

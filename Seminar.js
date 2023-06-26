@@ -232,8 +232,7 @@ function showOutput(){
   drawGanttChart();
 }
 
-var foreground = [];
-var background = [];
+
 
 function multilevelQueue(){
   gantt = [];
@@ -243,7 +242,8 @@ function multilevelQueue(){
   var done = 0;
   var count = 0;
   var k = 0;
-  
+  var foreground = [];
+  var background = [];
   
 
   var operation = document.getElementById('operations');
@@ -260,6 +260,7 @@ function multilevelQueue(){
   console.log(foreground[0]);
   
   
+
   function opening(){
     for(var i = 0; i < n; i++){
       if(processes[i].arrivalTime == currentTime && processes[i].typeSche == "Foreground"){
@@ -298,6 +299,8 @@ function multilevelQueue(){
       operation.appendChild(br);
       operation.appendChild(newdiv);
       operation.appendChild(br);
+
+      console.log(k.process);
 
       //Process First Time Being Execute
       k.firstTimeExecute += 1;
@@ -466,6 +469,12 @@ function multilevelQueue(){
       operation.appendChild(br);
 
 
+      tgantt.push({
+        "process": -1,
+        "start": currentTimeTemp,
+        "end": currentTime
+      });
+
       currentTime += 1;
       opening();
     }
@@ -478,7 +487,7 @@ function multilevelQueue(){
       
 
   //Calculate Average Waiting Time & Average Turnaround Time
-  
+  console.log(tgantt);
   var total_turnaroundTime = 0.0, total_waitingTime = 0.0, total_responeTime = 0.0;
   for(i = 0; i < n; i++){
     total_responeTime += processes[i].responeTime;

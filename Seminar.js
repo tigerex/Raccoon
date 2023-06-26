@@ -9,6 +9,16 @@ var averageResponeTime = 0.0;
 var gantt = [];
 var colors = ["#FF0000", "#05FF00", "#F2FF00", "#00C9FF", "#FF00F5", "#FF9100", "#004FFF", "#8000FF", "#00FFA3", "#B4CF49"];
 
+
+function getRandomColor() {
+  var letters = '0123456789ABCDEF';
+  var color = '#';
+  for (var i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
+
 function setQuantum(){
   var quantumInput = document.getElementById("quantum");
   var quantum1 = parseInt(quantumInput.value);
@@ -42,7 +52,7 @@ function setQuantum(){
     //Saved Quantum
     quantum = quantum1;
     quantumIsSet = 1;
-    console.log("Quantum:" + quantum);
+    console.log("Quantum: " + quantum);
   }
 }
 
@@ -110,6 +120,7 @@ function addProcess() {
       available: 0,
       finish: 0,
       typeSche: typeSche,
+      color: getRandomColor(),
     });
   }
   process += 1;
@@ -136,6 +147,9 @@ function clearData(){
   awt2.innerHTML = "";
   var atat2 = document.getElementById("atat1");
   atat2.innerHTML = "";
+  var canvas = document.getElementById("myCanvas");
+  var context = canvas.getContext('2d');
+  context.clearRect(0, 0, canvas.width, canvas.height);
 
   processes = [];
   process = 1;
@@ -230,9 +244,98 @@ function showOutput(){
   timer1.innerHTML = "";
 
   drawGanttChart();
+
+  //from this point to the end of this function is for building gantt chart using tag canvas
+
+  // Calculate total execution time
+  const totalExecutionTime = calculateTotalExecutionTime(processes);
+
+  // Calculate the width of each time unit in the canvas
+  const timeUnitWidth = 1000 / totalExecutionTime;
+
+  // Get the canvas element
+  const canvas = document.getElementById('myCanvas');
+  const context = canvas.getContext('2d');
+
+  // Draw the Gantt chart
+  let temCurrentTime = 0;
+  let yOffset = 60; // Initial y-offset for the process rows
+
+  // Draw process rows and process titles
+  for (var i = 0; i < processes.length; i++) {
+    // const process = processes[i];
+    const y = yOffset + i * 50;
+
+    // Draw process title
+    context.fillStyle = '#000';
+    context.font = '15px Arial';
+    context.fillText('P-'+ processes[i].process + ': ', 10, y + 20);
+    context.fillText(processes[i].typeSche, 10, y + 40);
+
+    // Draw horizontal line for the process row
+    context.strokeStyle = '#ccc';
+    context.lineWidth = 1;
+    context.beginPath();
+    context.moveTo(0, y);
+    context.lineTo(canvas.width, y);
+    context.stroke();
+
+    const x = temCurrentTime * timeUnitWidth + 100;
+    const burstTime = processes[i].burstTime;
+    let width = burstTime * timeUnitWidth;
+
+    // Apply time quantum for RR queue
+    if (processes[i].typeSche === 'Foreground') {
+      width = Math.min(width, quantum * timeUnitWidth);
+    }
+
+    // Draw Gantt chart rectangle
+    context.fillStyle = getRandomColor();
+    context.fillRect(x, y + 30, width, 20);
+
+    // Draw start time number
+    context.fillStyle = '#000';
+    context.font = '12px Arial';
+    context.fillText(temCurrentTime.toString(), x, y + 15);
+
+    // Draw end time number
+    context.fillText((temCurrentTime + burstTime).toString(), x + width - 10, y + 15);
+
+    temCurrentTime += burstTime;
+
+    // Check if there is remaining burst time for RR queue
+    if (processes[i].typeSche === 'Foreground' && burstTime > quantum) {
+      const remainingBurstTime = burstTime - quantum;
+      temCurrentTime += remainingBurstTime;
+    }
+  }
+
+  // Draw vertical timer stamp
+  for (let i = 0; i <= totalExecutionTime; i++) {
+    const x = i * timeUnitWidth + 100;
+
+    // Draw line
+    context.strokeStyle = '#ddd';
+    context.lineWidth = 1;
+    context.beginPath();
+    context.moveTo(x, yOffset - 20);
+    context.lineTo(x, yOffset + processes.length * 50);
+    context.stroke();
+
+    // Draw time label
+    context.fillStyle = 'blue';
+    context.font = '10px Arial';
+    context.fillText(i.toString(), x - 2.5, yOffset - 25);
+    }
 }
 
-
+function calculateTotalExecutionTime(processes) {
+  let totalExecutionTime = 0;
+  for (let i = 0; i < processes.length; i++) {
+    totalExecutionTime += processes[i].burstTime;
+  }
+  return totalExecutionTime;
+}
 
 function multilevelQueue(){
   gantt = [];
@@ -295,7 +398,7 @@ function multilevelQueue(){
       //Show Which Process Being Executed
       var newdiv = document.createElement("div");
       newdiv.setAttribute("style", "text-align: center; margin: auto; width:100%; font-size: 20px;");
-      newdiv.textContent = "Current Time = " + currentTime + ": Process-" + k.process + " Entered CPU and is Being Executed";
+      newdiv.textContent = "Current Time = " + currentTime + ": Process - " + k.process + " Entered CPU and is Being Executed";
       operation.appendChild(br);
       operation.appendChild(newdiv);
       operation.appendChild(br);
@@ -407,7 +510,7 @@ function multilevelQueue(){
 
           var newdiv = document.createElement("div");
           newdiv.setAttribute("style", "text-align: center; margin: auto; width:100%; font-size: 20px;");
-          newdiv.textContent = "Current Time = " + currentTimeTemp + ": Process-" + k2.process + " Entered CPU and is Being Executed";
+          newdiv.textContent = "Current Time = " + currentTimeTemp + ": Process - " + k2.process + " Entered CPU and is Being Executed";
           operation.appendChild(br);
           operation.appendChild(newdiv);
           operation.appendChild(br);
@@ -441,7 +544,7 @@ function multilevelQueue(){
 
           var newdiv = document.createElement("div");
           newdiv.setAttribute("style", "text-align: center; margin: auto; width:100%; font-size: 20px;");
-          newdiv.textContent = "Current Time = " + currentTimeTemp + ": Process-" + k2.process + " Entered CPU and is Being Executed";
+          newdiv.textContent = "Current Time = " + currentTimeTemp + ": Process - " + k2.process + " Entered CPU and is Being Executed";
           operation.appendChild(br);
           operation.appendChild(newdiv);
           operation.appendChild(br);
@@ -482,8 +585,6 @@ function multilevelQueue(){
       done = 1;
     }
   }
-
-  
       
 
   //Calculate Average Waiting Time & Average Turnaround Time
@@ -544,7 +645,6 @@ function multilevelQueue(){
       "end": stop
   });
 }
-
 
 
 function drawTable(){
@@ -609,7 +709,7 @@ function drawGanttChart(){
         d.setAttribute("style", "float: left; width: " + divWidth + "px; height: 50px;");
     }
     else {
-        d.setAttribute("style", "float: left; width: "+divWidth+"px; height: 50px; background-color: "+ colors[id1 - 1] +"; font-size: 20px; text-align: center;");
+        d.setAttribute("style", "float: left; width: "+divWidth+"px; height: 50px; background-color: "+ processes[i].color +"; font-size: 20px; text-align: center;");
         d.textContent = "P-" + gantt[i].id;
     }
     gt.appendChild(d); 

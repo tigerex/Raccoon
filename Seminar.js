@@ -232,8 +232,6 @@ function showOutput(){
   drawGanttChart();
 }
 
-
-
 function multilevelQueue(){
   gantt = [];
   currentTime = 0;
@@ -256,8 +254,8 @@ function multilevelQueue(){
     return a.arrivalTime - b.arrivalTime;
   });
   
-  console.log(processes[0]);
-  console.log(foreground[0]);
+  // console.log(processes[0]);
+  // console.log(foreground[0]);
   
   
 
@@ -277,12 +275,12 @@ function multilevelQueue(){
   
   //Execute Processes
   while(done != 1){
-    console.log("Current Time: " + currentTime);
-    console.log("Foreground: ");
-    console.log(foreground);
-    console.log(foreground.length);
-    console.log("Background: ");
-    console.log(background);
+    // console.log("Current Time: " + currentTime);
+    // console.log("Foreground: ");
+    // console.log(foreground);
+    // console.log(foreground.length);
+    // console.log("Background: ");
+    // console.log(background);
     
     //Run Foreground processes
     while(foreground.length != 0){
@@ -371,16 +369,19 @@ function multilevelQueue(){
       currentTimeTemp = currentTime;
       
 
-      while(background.length != 0){
+      while(background.length != 0 || k2.finish == 0){
         console.log("Current Time: " + currentTime);
-        console.log("Background: ");
-        console.log(background);
+        console.log("Background Length: " + background.length);
+
         //Tiến trình background đang chạy hoàn thành thì sẽ chuyển sang tiến trình tiếp theo
         if(k2.finish == 1 || k2 == 0){
           k2 = background.shift();
           currentTimeTemp = currentTime;
         }
-        
+
+        console.log(k2.process);
+        console.log("Background Length: " + background.length);
+
         k2.firstTimeExecute += 1;
         if(k2.firstTimeExecute == 1){
           k2.responeTime = currentTime - k2.arrivalTime;
@@ -412,23 +413,39 @@ function multilevelQueue(){
           operation.appendChild(newdiv);
           operation.appendChild(br);
           
-          var newdiv = document.createElement("div");
-          newdiv.setAttribute("style", "text-align: center; margin: auto; width:100%; font-size: 20px;");
-          newdiv.textContent = "<< This Process-" + k2.process + " Has Been Push Back to Background Queue >>";
-          operation.appendChild(br);
-          operation.appendChild(newdiv);
-          operation.appendChild(br);
-          
-          background.push(k2);
-          
+          if(k2.remainingTime <= 0 && k2.finish == 0){
+            k2.finish = 1;
+            k2.remainingTime = 0;
+            k2.completeTime = currentTime;
+            k2.turnaroundTime = k2.completeTime - k2.arrivalTime;
+            k2.waitingTime = k2.turnaroundTime - k2.burstTime;
+            count += 1;
 
-          tgantt.push({
-            "process": k2.process,
-            "start": currentTimeTemp,
-            "end": currentTimeTemp + (k2.burstTime - k2.remainingTime)
-          });
-
-          break;
+            //Gantt Chart Doing His Job
+            tgantt.push({
+              "process": k2.process,
+              "start": currentTimeTemp,
+              "end": k2.completeTime
+            });
+          }
+          else{
+            var newdiv = document.createElement("div");
+            newdiv.setAttribute("style", "text-align: center; margin: auto; width:100%; font-size: 20px;");
+            newdiv.textContent = "<< This Process-" + k2.process + " Has Been Push Back to Background Queue >>";
+            operation.appendChild(br);
+            operation.appendChild(newdiv);
+            operation.appendChild(br);
+            
+            background.push(k2);
+            
+            tgantt.push({
+              "process": k2.process,
+              "start": currentTimeTemp,
+              "end": currentTimeTemp + (k2.burstTime - k2.remainingTime)
+            });
+  
+            break;
+          }
         }
 
         if(k2.remainingTime <= 0 && k2.finish == 0){
@@ -446,7 +463,6 @@ function multilevelQueue(){
           operation.appendChild(newdiv);
           operation.appendChild(br);
 
-
           //Gantt Chart Doing His Job
           tgantt.push({
             "process": k2.process,
@@ -454,11 +470,11 @@ function multilevelQueue(){
             "end": k2.completeTime
           });
         }
-        else if(k2.remainingTime > 0){
-          background.push(k2);
-        }
       }
     }
+
+    console.log("Processes Length: " + n);
+    console.log("Count: " + count);
 
     if(count != n && foreground.length == 0 && background.length == 0){
       var newdiv = document.createElement("div");
@@ -478,16 +494,14 @@ function multilevelQueue(){
       currentTime += 1;
       opening();
     }
-    else if(count == n && foreground.length == 0 && background.length == 0){
+    
+    if(count == n && foreground.length == 0 && background.length == 0){
       done = 1;
     }
   }
 
-  
-      
-
   //Calculate Average Waiting Time & Average Turnaround Time
-  console.log(tgantt);
+  // console.log(tgantt);
   var total_turnaroundTime = 0.0, total_waitingTime = 0.0, total_responeTime = 0.0;
   for(i = 0; i < n; i++){
     total_responeTime += processes[i].responeTime;
@@ -544,8 +558,6 @@ function multilevelQueue(){
       "end": stop
   });
 }
-
-
 
 function drawTable(){
   var table = document.getElementById("processTable");

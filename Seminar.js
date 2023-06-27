@@ -242,23 +242,16 @@ function multilevelQueue(){
   var k = 0;
   var foreground = [];
   var background = [];
-  
 
   var operation = document.getElementById('operations');
   operation.innerHTML = "";
   var br = document.createElement("br");
-
   
   //Sort Processes by Arrive Time
   processes.sort(function (a, b){
     return a.arrivalTime - b.arrivalTime;
   });
   
-  // console.log(processes[0]);
-  // console.log(foreground[0]);
-  
-  
-
   function opening(){
     for(var i = 0; i < n; i++){
       if(processes[i].arrivalTime == currentTime && processes[i].typeSche == "Foreground"){
@@ -275,12 +268,6 @@ function multilevelQueue(){
   
   //Execute Processes
   while(done != 1){
-    // console.log("Current Time: " + currentTime);
-    // console.log("Foreground: ");
-    // console.log(foreground);
-    // console.log(foreground.length);
-    // console.log("Background: ");
-    // console.log(background);
     
     //Run Foreground processes
     while(foreground.length != 0){
@@ -368,7 +355,6 @@ function multilevelQueue(){
       var currentTimeTemp = 0;
       currentTimeTemp = currentTime;
       
-
       while(background.length != 0 || k2.finish == 0){
         console.log("Current Time: " + currentTime);
         console.log("Background Length: " + background.length);
@@ -463,6 +449,8 @@ function multilevelQueue(){
           operation.appendChild(newdiv);
           operation.appendChild(br);
 
+          console.log("Current Time: " + currentTime);
+
           //Gantt Chart Doing His Job
           tgantt.push({
             "process": k2.process,
@@ -484,11 +472,10 @@ function multilevelQueue(){
       operation.appendChild(newdiv);
       operation.appendChild(br);
 
-
       tgantt.push({
         "process": -1,
-        "start": currentTimeTemp,
-        "end": currentTime
+        "start": currentTime,
+        "end": currentTime + 1
       });
 
       currentTime += 1;
@@ -501,7 +488,6 @@ function multilevelQueue(){
   }
 
   //Calculate Average Waiting Time & Average Turnaround Time
-  // console.log(tgantt);
   var total_turnaroundTime = 0.0, total_waitingTime = 0.0, total_responeTime = 0.0;
   for(i = 0; i < n; i++){
     total_responeTime += processes[i].responeTime;
@@ -540,6 +526,7 @@ function multilevelQueue(){
         continue;
     }
     else {
+      
         pre = tgantt[i].process;
         stop = tgantt[i - 1].end;
         gantt.push({
